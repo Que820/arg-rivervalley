@@ -1,0 +1,600 @@
+/* ARG Framework · 通用运行时引擎
+ * 与具体剧情无关：路由 / 存档 / 线索进度 / 条件判定 / 聊天 / 判词 / 结局。
+ * 由 index.html 注入 window.ARG_STORY 后调用 ARG.boot()。
+ */
+(function () {
+  'use strict';
+
+  // ---------- 存档 ----------
+  const DEFAULT_SAVE = { clues: [], revealed: [], flags: {}, verdict: null, combos: [], idleCount: 0 };
+
+  function loadSave(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? Object.assign({}, DEFAULT_SAVE, JSON.parse(raw)) : Object.assign({}, DEFAULT_SAVE);
+    } catch (e) {
+      return Object.assign({}, DEFAULT_SAVE);
+    }
+  }
+  function persist() {
+    try { localStorage.setItem(S.key, JSON.stringify(S.save)); } catch (e) { /* ignore */ }
+  }
+
+  // ---------- 全局会话 ----------
+  let S = { story: null, key: '', save: null, nodes: {} };
+
+  // ---------- 条件系统 ----------
+  // requires: ["clueId"] 或 { clues:[], progressMin, progressMax, flag, flagNot }
+  function evalRequires(req) {
+    if (!req) return { ok: true };
+    const list = Array.isArray(req) ? { clues: req } : req;
+    const missing = [];
+    (list.clues || []).forEach((c) => { if (!S.save.clues.includes(c)) missing.push(clueLabel(c)); });
+    const fl = (f) => (S.story.meta.flagLabels || {})[f] || f;
+    (list.flags || []).forEach((f) => { if (!S.save.flags[f]) missing.push('还差：' + fl(f)); });
+    if (list.flag && !S.save.flags[list.flag]) missing.push('还差：' + fl(list.flag));
+    if (list.flagNot && S.save.flags[list.flagNot]) missing.push('条件冲突：' + list.flagNot);
+    const p = progress();
+    if (list.progressMin != null && p < list.progressMin) missing.push('线索进度≥' + list.progressMin + '%');
+    if (list.progressMax != null && p > list.progressMax) missing.push('线索进度≤' + list.progressMax + '%');
+    return { ok: missing.length === 0, missing };
+  }
+  function clueLabel(id) { return (S.story.clues && S.story.clues[id]) || id; }
+  function progress() {
+    const total = Object.keys(S.story.clues || {}).length;
+    return total ? Math.round((S.save.clues.length / total) * 100) : 0;
+  }
+  function collectClue(id) {
+    if (id && S.story.clues && S.story.clues[id] && !S.save.clues.includes(id)) {
+      S.save.clues.push(id);
+      persist();
+    }
+  }
+
+  // ---------- 路由（hash） ----------
+  function currentRoute() {
+    const m = location.hash.match(/^#\/page\/(.+)$/);
+    return m ? decodeURIComponent(m[1]) : S.story.meta.start;
+  }
+  function go(nodeId) {
+    if (location.hash === '#/page/' + nodeId) render();
+    else location.hash = '#/page/' + nodeId;
+  }
+  window.addEventListener('hashchange', render);
+
+  // ---------- 工具 ----------
+  function el(tag, attrs, children) {
+    const e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach((k) => {
+      if (k === 'class') e.className = attrs[k];
+      else if (k === 'html') e.innerHTML = attrs[k];
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    });
+    (function flat(cs) { (cs || []).forEach((c) => {
+      if (c == null) return;
+      if (Array.isArray(c)) { flat(c); return; }
+      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }); })(children);
+    return e;
+  }
+  // 正文富文本：[[线索id|关键词]] = 点击即「你」给罗伦萨下达调查指令，他回传调查结果并记录线索
+  const openReports = {};
+  function reportBox(id) {
+    const node = S.nodes[id];
+    if (!node) return null;
+    const collapsed = openReports[id] === 'min';
+    const box = el('div', { class: 'invest-report' + (collapsed ? ' collapsed' : '') });
+    box.appendChild(el('div', { class: 'invest-cmd' }, ['【你 → 罗伦萨】去查「' + (node.reportLabel || node.title) + '」。']));
+    if (node.mine) {
+      box.appendChild(el('div', { class: 'invest-mine' }, [parasWithReports(node.mine)]));
+    }
+    const head = el('div', { class: 'invest-head' }, [
+      '【罗伦萨 · 调查回传】' + (node.title || '') + '　',
+      el('span', { class: 'invest-toggle' }, [collapsed ? '（展开）' : '（收起）']),
+    ]);
+    head.addEventListener('click', () => {
+      openReports[id] = collapsed ? true : 'min'; persist(); render();
+    });
+    box.appendChild(head);
+    if (!collapsed) {
+      const body = el('div', { class: 'invest-body' });
+      if (node.process) paras(node.process).forEach((x) => { x.className = 'invest-process-p'; body.appendChild(x); });
+      paras(node.body).forEach((x) => body.appendChild(x));
+      box.appendChild(body);
+      box.appendChild(el('div', { class: 'invest-note dim' }, ['（关键词已记录：' + clueLabel(id) + '）']));
+    }
+    return box;
+  }
+  function renderRich(line, blockOut) {
+    const parts = String(line).split(/(\[\[[^\]]+\]\])/);
+    const frag = parts.map((p) => {
+      const m = p.match(/^\[\[([^|\]]+)\|([^\]]+)\]\]$/);
+      if (!m) return p;
+      const id = m[1], label = m[2];
+      const got = S.save.clues.includes(id);
+      const w = el('span', { class: 'kw-inline' + (got ? ' got' : ''), title: got ? '已记录 · 点击重看调查回传' : '点击：指示罗伦萨调查' }, [label]);
+      w.addEventListener('click', () => {
+        if (!S.save.clues.includes(id)) collectClue(id);
+        openReports[id] = (openReports[id] === true) ? 'min' : true;
+        persist();
+        render();
+      });
+      return w;
+    });
+    if (blockOut) {
+      parts.forEach((p) => {
+        const m = p.match(/^\[\[([^|\]]+)\|([^\]]+)\]\]$/);
+        if (m && openReports[m[1]]) blockOut.push(reportBox(m[1]));
+      });
+    }
+    return frag;
+  }
+  function paras(text) {
+    return String(text || '').split(/\n+/).filter((l) => l.trim()).map((l) => el('p', null, [renderRich(l)]));
+  }
+  // 带调查回传块的段落：指令结果展开在对应段落下方
+  function parasWithReports(text) {
+    const out = [];
+    String(text || '').split(/\n+/).filter((l) => l.trim()).forEach((l) => {
+      const blocks = [];
+      out.push(el('p', null, [renderRich(l, blocks)]));
+      blocks.forEach((b) => out.push(b));
+    });
+    return out;
+  }
+  function disabledHint(missing) {
+    return '🔒 ' + (missing || []).join('；');
+  }
+
+  // ---------- 侧栏 ----------
+  function sidePanel(extra) {
+    const p = progress();
+    const clueList = S.save.clues.map((c) => el('div', { class: 'kw' }, ['▪ ' + clueLabel(c)]));
+    const suspects = (S.story.suspects || [])
+      .map((s) => (typeof s === 'string' ? { name: s } : s))
+      .filter((s) => !s.requires || evalRequires(s.requires).ok)
+      .map((s) => el('div', { class: 'suspect' + (s.page ? ' clickable' : ''),
+        onclick: s.page ? () => enter(s.page) : null },
+        ['□ ' + s.name]));
+    const suspectList = suspects.length ? suspects : [el('div', { class: 'dim' }, ['（暂无——证据指向谁，谁才会被列上来）'])];
+    return el('aside', { class: 'rv-side' }, [
+      el('h3', null, ['线索进度 ' + p + '%']),
+      el('div', { class: 'bar' }, [el('div', { class: 'bar-fill', style: 'width:' + p + '%' })]),
+      el('h3', null, ['已收集关键词']),
+      clueList.length ? clueList : [el('div', { class: 'dim' }, ['（暂无）'])],
+      el('h3', null, ['嫌疑人']),
+      suspectList,
+      extra || null,
+      el('div', { class: 'side-back' }, [el('a', { href: '#/page/' + S.story.meta.start }, ['« 返回工作台'])]),
+      el('div', { class: 'side-reset' }, [el('a', { href: 'javascript:void(0)', onclick: () => {
+        if (confirm('确定要重置存档、从头开始调查吗？此操作不可撤销。')) window.ARG.reset();
+      } }, ['↺ 重置存档（从头开始）'])]),
+    ]);
+  }
+
+  // ---------- 渲染器们 ----------
+  function nodeLinks(node) {
+    const box = el('div', { class: 'links' });
+    (node.links || []).forEach((l) => {
+      if (l.hideRequires && !evalRequires(l.hideRequires).ok) return;
+      const cond = evalRequires(l.requires);
+      if (!cond.ok && l.hideIfLocked) return;
+      if (cond.ok) {
+        box.appendChild(el('div', { class: 'link-item' }, [
+          el('a', { href: '#/page/' + l.to, onclick: (ev) => { ev.preventDefault(); if (l.setFlag) { S.save.flags[l.setFlag] = true; persist(); } enter(l.to); } }, [l.label]),
+        ]));
+      } else {
+        box.appendChild(el('div', { class: 'link-item locked' }, [l.label + '　' + disabledHint(cond.missing)]));
+      }
+    });
+    return box;
+  }
+
+  function enter(nodeId) {
+    const node = S.nodes[nodeId];
+    if (!node) return;
+    collectClue(node.clue);
+    if (node.type === 'login' && S.save.flags.loginUnlocked && node.success) { go(node.success); return; }
+    go(nodeId);
+  }
+
+  function renderBrowse(node) {
+    const out = parasWithReports(node.body);
+    (node.sections || []).forEach((sec) => {
+      if (sec.requires && !evalRequires(sec.requires).ok) return;
+      out.push.apply(out, parasWithReports(sec.text));
+    });
+    out.push(nodeLinks(node));
+    return out;
+  }
+
+  function renderFiles(node) {
+    const head = node.path ? el('div', { class: 'files-path' }, [node.path]) : null;
+    const out = [head, ...paras(node.body)];
+    (node.sections || []).forEach((sec) => {
+      if (sec.requires && !evalRequires(sec.requires).ok) return;
+      out.push.apply(out, paras(sec.text));
+    });
+    out.push(nodeLinks(node));
+    return out;
+  }
+
+  function renderLogin(node) {
+    const input = el('input', { type: 'password', placeholder: '输入密码…', class: 'pwd-input' });
+    const err = el('div', { class: 'err' });
+    const btn = el('button', { class: 'btn', onclick: () => {
+      const norm = (v) => String(v).trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (norm(input.value) === norm(node.password)) {
+        S.save.flags.loginUnlocked = true; persist();
+        if (node.success) enter(node.success);
+      } else err.textContent = node.wrongHint || '密码错误。';
+    } }, ['解锁']);
+    return [
+      el('div', { class: 'login-box' }, [
+        el('div', { class: 'login-title' }, [node.systemName || node.title]),
+        node.hint ? el('div', { class: 'dim login-hint' }, [node.hint]) : null,
+        input, el('div', { class: 'login-actions' }, [btn]), err,
+      ]),
+    ];
+  }
+
+  function renderChat(node) {
+    const wrap = el('div', { class: 'chat-wrap' });
+    const list = el('div', { class: 'contact-list' });
+    const pane = el('div', { class: 'chat-pane' });
+    wrap.appendChild(list); wrap.appendChild(pane);
+
+    function show(contact) {
+      pane.innerHTML = '';
+      pane.appendChild(el('div', { class: 'chat-head' }, [
+        el('b', null, [contact.avatar + ' ' + contact.name]),
+        el('span', { class: 'dim' }, [contact.bio || '']),
+      ]));
+      const msgs = el('div', { class: 'chat-msgs' });
+      (contact.messages || []).forEach((m) => msgs.appendChild(el('div', { class: 'bubble' }, [m.text])));
+      // 已触发的选项回复在重渲染后回显
+      (contact.options || []).forEach((o, i) => {
+        const rkey = node.id + ':' + contact.name + ':' + i;
+        if (S.save.revealed.includes(rkey) && o.reply && o.reply !== '……') {
+          msgs.appendChild(el('div', { class: 'bubble reply' }, [o.reply]));
+        }
+      });
+      pane.appendChild(msgs);
+      (contact.options || []).forEach((o, i) => {
+        if (o.hideRequires && !evalRequires(o.hideRequires).ok) return;
+        const rkey = node.id + ':' + contact.name + ':' + i;
+        const done = S.save.revealed.includes(rkey);
+        const cond = evalRequires(o.requires);
+        if (done || !cond.ok) return; // 未解锁的选项不显示；已点过的选项由回显气泡呈现
+        const row = el('div', { class: 'chat-choice' });
+        const btn = el('button', { class: 'btn' }, [o.text]);
+        btn.addEventListener('click', () => {
+          if (!S.save.revealed.includes(rkey)) { S.save.revealed.push(rkey); }
+          if (o.clue) collectClue(o.clue);
+          if (o.setFlag) { S.save.flags[o.setFlag] = true; persist(); }
+          persist();
+          if (o.to) enter(o.to); else show(contact); // 只刷新当前会话，展示新解锁的选项
+        });
+        row.appendChild(btn);
+        pane.appendChild(row);
+      });
+    }
+
+    (node.contacts || []).forEach((c, idx) => {
+      const item = el('div', { class: 'contact-item', onclick: () => {
+        list.querySelectorAll('.contact-item').forEach((x) => x.classList.remove('active'));
+        item.classList.add('active');
+        show(c);
+      } }, [el('span', { class: 'avatar' }, [c.avatar]), el('span', null, [c.name])]);
+      if (idx === 0) item.classList.add('active');
+      list.appendChild(item);
+    });
+    if (node.contacts && node.contacts.length) show(node.contacts[0]);
+    return [wrap];
+  }
+
+  // ---------- 搜索式沟通面板（聊天样式，仅输入触发） ----------
+  function renderSearch(node) {
+    const wrap = el('div', { class: 'chat-wrap search-chat' });
+    const pane = el('div', { class: 'chat-pane' });
+    wrap.appendChild(pane);
+
+    pane.appendChild(el('div', { class: 'chat-head' }, [
+      el('b', null, ['📡 ' + (node.contactName || '罗伦萨')]),
+      el('span', { class: 'dim' }, ['想问些什么就问——但他只回答有证据支撑的问题']),
+    ]));
+
+    const msgs = el('div', { class: 'chat-msgs' });
+    pane.appendChild(msgs);
+
+    const sysLine = (text) => msgs.appendChild(el('div', { class: 'dim chat-sys' }, [text]));
+    function showResult(t, q) {
+      msgs.appendChild(el('div', { class: 'bubble user' }, [t]));
+      if (q) {
+        msgs.appendChild(el('div', { class: 'bubble' }, [paras(q.reply)]));
+        if (q.idea) msgs.appendChild(el('div', { class: 'bubble idea' }, [paras('（他的想法）' + q.idea)]));
+      }
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+    function runQuery(t, q) {
+      const rkey = node.id + ':' + q.term;
+      if (!S.save.revealed.includes(rkey)) S.save.revealed.push(rkey);
+      if (q.clue) collectClue(q.clue);
+      if (q.setFlag) S.save.flags[q.setFlag] = true;
+      persist();
+      showResult(t, q);
+    }
+    function submit() {
+      const t = input.value.trim();
+      if (!t) return;
+      input.value = '';
+      const q = (node.queries || []).find((x) => x.term === t || (x.alias || []).indexOf(t) >= 0);
+      if (!q || (q.hideRequires && !evalRequires(q.hideRequires).ok)) {
+        // 未收录的词：按 idle 词条匹配人物/场景，给出罗伦萨的想法；否则轮换兜底想法
+        const idle = (node.idle || []).find((x) =>
+          (!x.requires || evalRequires(x.requires).ok) &&
+          (x.match || []).some((m) => t.indexOf(m) >= 0 || m.indexOf(t) >= 0));
+        msgs.appendChild(el('div', { class: 'bubble user' }, [t]));
+        if (idle) {
+          msgs.appendChild(el('div', { class: 'bubble' }, [paras(idle.idea)]));
+        } else {
+          const pool = node.fallbackIdeas || ['……频道那头沉默了几秒。换个词试试。'];
+          const idea = pool[S.save.idleCount % pool.length];
+          S.save.idleCount = (S.save.idleCount || 0) + 1; persist();
+          msgs.appendChild(el('div', { class: 'bubble' }, [paras(idea)]));
+        }
+        msgs.scrollTop = msgs.scrollHeight;
+        return;
+      }
+      const miss = evalRequires(q.requires);
+      if (!miss.ok) {
+        msgs.appendChild(el('div', { class: 'bubble user' }, [t]));
+        // 按实际缺失的条件选回应：初报未做时优先催初报，否则用词条专属/默认拒绝
+        let reply;
+        if ((q.requires.flags || []).indexOf('f_told') >= 0 && !S.save.flags.f_told) {
+          reply = '「现场情况你还没跟我说。」罗伦萨打断你，「你看到了什么，先一条条报给我。」';
+        } else {
+          reply = q.lockedReply || node.defaultLockedReply || '「现在问这个还太早。」他顿了顿，「先把眼前的查清楚，再来问我。」';
+        }
+        msgs.appendChild(el('div', { class: 'bubble' }, [paras(reply)]));
+        sysLine('（还差：' + miss.missing.join('；') + '）');
+        msgs.scrollTop = msgs.scrollHeight;
+        return;
+      }
+      runQuery(t, q);
+    }
+
+    // 回显已触发过的查询（按剧情顺序）
+    let openGreet = false;
+    (node.queries || []).forEach((q) => {
+      if (S.save.revealed.includes(node.id + ':' + q.term)) {
+        if (!openGreet) { msgs.appendChild(el('div', { class: 'bubble' }, ['（频道已接通。他在等你提问。）'])); openGreet = true; }
+        showResult(q.term, q);
+      }
+    });
+    if (!openGreet) msgs.appendChild(el('div', { class: 'bubble' }, ['（频道已接通。他在等你提问。）']));
+
+    const row = el('div', { class: 'chat-input-row' });
+    const input = el('input', { type: 'text', class: 'chat-input', placeholder: '想问些什么…' });
+    const btn = el('button', { class: 'btn' }, ['发送']);
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+    row.appendChild(input); row.appendChild(btn);
+    pane.appendChild(row);
+    return [wrap];
+  }
+
+  function renderVerdict(node) {
+    const cfg = node.verdict || S.story.verdictPage || {};
+    const box = el('div', { class: 'verdict' });
+    (cfg.intro || []).forEach((t) => {
+      const text = typeof t === 'string' ? t : t.text;
+      if (typeof t === 'object' && t.requires && !evalRequires(t.requires).ok) return;
+      box.appendChild(el('p', null, [text]));
+    });
+    (cfg.choices || []).forEach((ch) => {
+      const cond = evalRequires(ch.requires);
+      const row = el('div', { class: 'verdict-choice' });
+      const btn = el('button', { class: 'btn verdict-btn' }, [ch.label]);
+      if (!cond.ok || S.save.verdict) btn.disabled = true;
+      if (!cond.ok) return; // 前置不满足：隐藏选项，不显示锁提示
+      btn.addEventListener('click', () => {
+        if (S.save.verdict != null) return;
+        let end = ch.ending;
+        if (ch.endings) { // 同一判词按进度分流到不同结局
+          for (const b of ch.endings) {
+            if (!b.requires || evalRequires(b.requires).ok) { end = b.ending; break; }
+          }
+        }
+        S.save.verdict = end; persist();
+        enter(end);
+      });
+      row.appendChild(btn);
+      box.appendChild(row);
+    });
+    if (S.save.verdict) {
+      box.appendChild(el('p', { class: 'warn' }, ['※ 判词已提交，不可撤销。']));
+      box.appendChild(el('a', { href: '#/page/' + S.save.verdict }, ['查看结局 »']));
+    }
+    return [box];
+  }
+
+  function renderEnding(node) {
+    return [
+      el('div', { class: 'ending-title' }, [node.title]),
+      el('div', { class: 'ending-body' }, [paras(node.body)]),
+    ];
+  }
+
+  // ---------- 关键词组合面板 ----------
+  function nodeCombos(node) {
+    const all = (S.story.combos || []).concat(node.combos || []);
+    return all.filter((c) => !node.comboExclude || node.comboExclude.indexOf(c.id) === -1);
+  }
+
+  function renderComboPanel(node) {
+    const combos = nodeCombos(node);
+    if (!combos.length) return null;
+    const owned = S.save.clues;
+    const box = el('div', { class: 'combo-panel' });
+    box.appendChild(el('h3', { class: 'combo-title' }, ['🧩 关键词组合']));
+    box.appendChild(el('div', { class: 'dim combo-hint' }, ['从已收集的关键词中选取两条进行组合。']));
+
+    const chips = el('div', { class: 'combo-chips' });
+    const selected = [];
+    owned.forEach((c) => {
+      const chip = el('button', { class: 'combo-chip' }, [clueLabel(c)]);
+      chip.addEventListener('click', () => {
+        const i = selected.indexOf(c);
+        if (i >= 0) { selected.splice(i, 1); chip.classList.remove('active'); }
+        else if (selected.length < 2) { selected.push(c); chip.classList.add('active'); }
+      });
+      chips.appendChild(chip);
+    });
+    if (!owned.length) chips.appendChild(el('div', { class: 'dim' }, ['（还没有关键词，先去调查收集线索）']));
+    box.appendChild(chips);
+
+    const result = el('div', { class: 'combo-result' });
+    const err = el('div', { class: 'dim combo-err' });
+    const btn = el('button', { class: 'btn combo-btn' }, ['⚡ 尝试组合']);
+    btn.addEventListener('click', () => {
+      if (selected.length < 2) { err.textContent = '请先选取两个关键词。'; return; }
+      err.textContent = '';
+      const key = selected.slice().sort().join('+');
+      const hit = combos.find((c) => (c.keywords || []).slice().sort().join('+') === key);
+      if (!hit) { const hints = S.story.comboHints || {}; err.textContent = hints[key] || hints[selected.slice().sort().reverse().join('+')] || '这两个关键词之间没有发现任何联系……换个组合试试。'; return; }
+      if (!S.save.combos.includes(hit.id)) {
+        S.save.combos.push(hit.id); persist();
+      }
+      if (hit.clue) collectClue(hit.clue);
+      if (hit.flag) { S.save.flags[hit.flag] = true; persist(); }
+      result.innerHTML = '';
+      const inner = el('div', { class: 'combo-result-inner' }, [
+        el('div', { class: 'combo-result-title' }, ['🧠 你的调查：' + (hit.title || '新的发现')]),
+        (hit.steps || []).map((st) => el('div', { class: 'combo-step' }, ['▸ ' + st])),
+        el('div', { class: 'combo-conclusion' }, [paras(hit.result)]),
+        hit.to ? el('a', { href: '#/page/' + hit.to, onclick: (ev) => { ev.preventDefault(); enter(hit.to); } }, ['➜ 前往：' + ((S.nodes[hit.to] || {}).title || hit.to)]) : null,
+      ]);
+      result.appendChild(inner);
+      render();
+    });
+    box.appendChild(el('div', { class: 'combo-actions' }, [btn, err]));
+    box.appendChild(result);
+
+    // 已解开的组合在重渲染后回显
+    combos.forEach((hit) => {
+      if (S.save.combos.includes(hit.id)) {
+        result.appendChild(el('div', { class: 'combo-result-inner done' }, [
+          el('div', { class: 'combo-result-title' }, ['✓ ' + (hit.title || '已解开的组合')]),
+          paras(hit.result),
+        ]));
+      }
+    });
+    return box;
+  }
+
+  function renderWorkbench(node) {
+    return [
+      el('h2', { class: 'wb-title' }, [node.title]),
+      paras(node.body),
+      nodeLinks(node),
+      renderComboPanel(node),
+    ];
+  }
+
+  // ---------- 主渲染 ----------
+  function render() {
+    if (!S.story) return;
+    const id = currentRoute();
+    let node = S.nodes[id] || { type: '404', title: '404' };
+    // forward：条件满足时自动渲染目标节点（如已进屋则不再落在门外）
+    let guard = 0;
+    while (node.forward && evalRequires(node.forward.requires).ok && S.nodes[node.forward.to] && guard++ < 5) {
+      node = S.nodes[node.forward.to];
+    }
+    collectClue(node.clue);
+    if (node.enterFlag && !S.save.flags[node.enterFlag]) { S.save.flags[node.enterFlag] = true; persist(); }
+    if (node.lockRequires && !evalRequires(node.lockRequires).ok) {
+      document.title = S.story.meta.title + ' · ' + (node.title || '');
+      const root = document.getElementById('arg-root');
+      root.innerHTML = '';
+      root.appendChild(el('div', { class: 'rv-shell' }, [
+        el('header', { class: 'rv-titlebar' }, [(node.systemName || S.story.meta.systemName || S.story.meta.title) + ' — ' + (node.title || '')]),
+        el('div', { class: 'rv-window' }, [el('div', { class: 'rv-main' }, [
+          el('div', { class: 'login-box' }, [
+            el('div', { class: 'login-title' }, ['🔒 ' + (node.title || '')]),
+            el('div', { class: 'dim login-hint' }, ['权限不足：' + disabledHint(evalRequires(node.lockRequires).missing)]),
+          ...((node.lockLinks || []).map((l) => el('a', { href: '#/page/' + l.to, class: 'login-link', style: 'display:block;margin-top:10px;' }, ['➜ ' + l.label]))),
+
+          ]),
+        ]), sidePanel()]),
+      ]));
+      return;
+    }
+    document.title = node.title ? S.story.meta.title + ' · ' + node.title : S.story.meta.title;
+    const main = el('div', { class: 'rv-main' });
+    let inner;
+    switch (node.type) {
+      case 'chat': inner = renderChat(node); break;
+      case 'search': inner = renderSearch(node); break;
+      case 'login': {
+        if (node.requires && !evalRequires(node.requires).ok) {
+          inner = [
+            el('div', { class: 'login-box' }, [
+              el('div', { class: 'login-title' }, [node.systemName || node.title]),
+              el('div', { class: 'dim login-hint' }, ['🔒 解密模块离线。' + disabledHint(evalRequires(node.requires).missing)]),
+            ]),
+          ];
+        } else if (S.save.flags.loginUnlocked && node.success) {
+          inner = [
+            el('div', { class: 'login-box' }, [
+              el('div', { class: 'login-title' }, [node.systemName || node.title]),
+              el('div', { class: 'dim login-hint' }, ['✓ 终端已解锁。']),
+              el('div', { class: 'login-actions' }, [el('a', { href: '#/page/' + node.success, onclick: (ev) => { ev.preventDefault(); enter(node.success); } }, ['➜ 进入' + ((S.nodes[node.success] || {}).title || '目标页面')])]),
+            ]),
+          ];
+        } else {
+          inner = renderLogin(node);
+        }
+        break;
+      }
+      case 'files': inner = renderFiles(node); break;
+      case 'verdict': inner = renderVerdict(node); break;
+      case 'ending': inner = renderEnding(node); break;
+      case 'workbench': inner = renderWorkbench(node); break;
+      case '404': inner = [el('p', null, ['无法显示该页（404 Not Found）'])]; break;
+      default: inner = renderBrowse(node);
+    }
+    (function flatAppend(cs) { (cs || []).forEach((x) => {
+      if (x == null) return;
+      if (Array.isArray(x)) { flatAppend(x); return; }
+      main.appendChild(x);
+    }); })(inner);
+
+    const root = document.getElementById('arg-root');
+    root.innerHTML = '';
+    root.appendChild(el('div', { class: 'rv-shell' }, [
+      el('header', { class: 'rv-titlebar' }, [(node.systemName || S.story.meta.systemName || S.story.meta.title) + ' — ' + (node.title || '')]),
+      el('div', { class: 'rv-window' }, [main, sidePanel()]),
+    ]));
+  }
+
+  // ---------- 启动 ----------
+  window.ARG = {
+    boot: function () {
+      S.story = window.ARG_STORY;
+      S.key = S.story.meta.storageKey || 'arg-save-default';
+      S.save = loadSave(S.key);
+      S.nodes = {};
+      (S.story.nodes || []).forEach((n) => { S.nodes[n.id] = n; });
+      // 老存档回填：拼过的组合自动补旗标
+      (S.story.combos || []).forEach((c) => {
+        if (c.flag && S.save.combos && S.save.combos.includes(c.id) && !S.save.flags[c.flag]) { S.save.flags[c.flag] = true; }
+      });
+      if (!location.hash) location.hash = '#/page/' + S.story.meta.start;
+      render();
+    },
+    reset: function () { localStorage.removeItem(S.key); location.hash = ''; location.reload(); },
+  };
+})();

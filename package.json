@@ -1,0 +1,16 @@
+{
+  "name": "arg-framework",
+  "version": "1.0.0",
+  "description": "内容与引擎分离的可复用 ARG 框架。引擎只负责：路由、状态存档、线索进度、条件判定、聊天、结局。所有剧情都写在 `content/story.json` 里。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "jsdom": "^30.1.1"
+  }
+}

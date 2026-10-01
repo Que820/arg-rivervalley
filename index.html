@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ARG Framework</title>
+  <link rel="stylesheet" href="themes/retro2001.css">
+</head>
+<body data-theme="retro2001">
+  <div id="arg-root"></div>
+
+  <!-- 剧情包：换故事只需改这个文件（或换 URL） -->
+  <script id="arg-story" src="content/story.json"></script>
+
+  <!-- 引擎 -->
+  <script src="engine/arg-runtime.js"></script>
+
+  <script>
+    // fetch 剧情包 → 注入 window.ARG_STORY → 启动引擎
+    (function () {
+      var url = document.getElementById('arg-story').getAttribute('src');
+      fetch(url)
+        .then(function (r) {
+          if (!r.ok) throw new Error('story.json 加载失败：HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (story) {
+          window.ARG_STORY = story;
+          window.ARG.boot();
+        })
+        .catch(function (e) {
+          document.getElementById('arg-root').innerHTML =
+            '<div style="background:#fff;border:2px outset #ddd;padding:20px;font-family:monospace">' +
+            '<b>剧情包加载失败</b><br>' + e.message +
+            '<br><br>请通过 HTTP 服务访问本目录，例如：<br><code>python -m http.server 8080</code></div>';
+        });
+    })();
+  </script>
+</body>
+</html>
