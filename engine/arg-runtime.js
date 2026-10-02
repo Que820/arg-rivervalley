@@ -6,7 +6,7 @@
   'use strict';
 
   // ---------- 存档 ----------
-  const DEFAULT_SAVE = { clues: [], revealed: [], flags: {}, verdict: null, combos: [], idleCount: 0 };
+  const DEFAULT_SAVE = { clues: [], revealed: [], flags: {}, verdict: null, combos: [], idleCount: 0, visited: [] };
 
   function loadSave(key) {
     try {
@@ -562,7 +562,12 @@
       return;
     }
     document.title = node.title ? S.story.meta.title + ' · ' + node.title : S.story.meta.title;
-    const main = el('div', { class: 'rv-main' });
+    // 重访不重播入场动画：只有首次进入才播
+    if (!S.save.visited) S.save.visited = [];
+    const nid = node.id || id;
+    const revisited = S.save.visited.indexOf(nid) !== -1;
+    const main = el('div', { class: 'rv-main' + (revisited ? ' no-anim' : '') });
+    if (revisited === false) { S.save.visited.push(nid); persist(); }
     let inner;
     switch (node.type) {
       case 'chat': inner = renderChat(node); break;

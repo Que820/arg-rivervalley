@@ -519,3 +519,6 @@ body, .btn, input, textarea {
 .link-item.locked a::before { content: "✗ "; color: #9A9A9A; }
 .rv-main { font-size: 14px; line-height: 1.95; }
 .rv-main p, .rv-main li { font-size: inherit; }
+
+/* 重访抑制：同一节点第二次进入不再重播入场动画 */
+.no-anim > *, .no-anim .bubble, .no-anim .card-sec, .no-anim .combo-result-inner, .no-anim .bar-fill { animation: none !important; }

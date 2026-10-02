@@ -423,3 +423,5 @@ html[data-mode="dark"] .chat-msgs .bubble:nth-child(n+13) { animation-delay: 1.6
 /* 暗色下覆盖原版写死的正文颜色 */
 html[data-mode="dark"] .rv-main, html[data-mode="dark"] .rv-main p { color: var(--fg); }
 html[data-mode="dark"] .rv-window { background: var(--panel); }
+
+html[data-mode="dark"] .no-anim > *, html[data-mode="dark"] .no-anim .bubble, html[data-mode="dark"] .no-anim .card-sec, html[data-mode="dark"] .no-anim .combo-result-inner, html[data-mode="dark"] .no-anim .bar-fill { animation: none !important; }
