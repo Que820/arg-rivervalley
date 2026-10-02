@@ -213,17 +213,7 @@ body[data-theme="retro2001"] {
    原则：保留 Win2000 拟物语言，只做减噪、增真、加呼吸感
    ============================================================ */
 
-/* ---- 全局氛围：CRT 扫描线 + 轻微暗角，压住纯色的塑料感 ---- */
-body::before {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9000;
-  background: repeating-linear-gradient(
-    0deg, rgba(0,0,0,.028) 0 1px, transparent 1px 3px);
-  mix-blend-mode: multiply;
-}
-body::after {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9001;
-  background: radial-gradient(ellipse at center, transparent 62%, rgba(0,20,20,.16) 100%);
-}
+/* 全局氛围层已移除：扫描线+暗角长时间阅读易疲劳 */
 
 /* ---- 字体渲染：宋体在低分屏更利落 ---- */
 body {
@@ -231,15 +221,19 @@ body {
   text-rendering: optimizeLegibility;
   padding: 28px 20px 48px;
 }
+
+/* ---- 阅读减负 ---- */
+.rv-main { font-size: 15px; line-height: 2.05; color: #1a1a1a; }
+.rv-side { color: #333; }
 ::selection { background: #000080; color: #fff; }
 
 /* ---- 桌面底纹：从均匀圆点改为有景深的点阵 ---- */
 body[data-theme="retro2001"] {
   background:
-    radial-gradient(1200px 700px at 30% 8%, rgba(255,255,255,.06), transparent 60%),
-    radial-gradient(#106868 1px, transparent 1px);
-  background-size: auto, 22px 22px;
-  background-color: #008080;
+    radial-gradient(1200px 700px at 30% 8%, rgba(255,255,255,.05), transparent 60%),
+    radial-gradient(#107c7c 1px, transparent 1px);
+  background-size: auto, 26px 26px;
+  background-color: #008484;
 }
 
 /* ---- 外壳：更真实的 98 凸浮雕（高光+暗影双线） ---- */
@@ -252,8 +246,8 @@ body[data-theme="retro2001"] {
     inset 1px 1px 0 0 #ffffff,
     inset -2px -2px 0 0 #808080,
     inset 2px 2px 0 0 #dfdfdf,
-    2px 3px 0 0 rgba(0,30,30,.35),
-    6px 8px 24px rgba(0,25,25,.35);
+    2px 3px 0 0 rgba(0,30,30,.2),
+    5px 7px 18px rgba(0,25,25,.18);
 }
 .rv-window {
   border: none;
