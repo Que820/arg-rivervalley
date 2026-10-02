@@ -43,7 +43,7 @@ html[data-mode="dark"] body::before {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9000;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(139,233,253,.018) 0px, rgba(139,233,253,.018) 1px,
+    rgba(139,233,253,.025) 0px, rgba(139,233,253,.025) 1px,
     transparent 1px, transparent 3px);
 }
 

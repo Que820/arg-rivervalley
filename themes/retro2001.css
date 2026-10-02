@@ -33,7 +33,7 @@ body {
 .side-back { margin-top: 14px; }
 .side-back a { color: #0000cc; }
 
-.links { margin-top: 16px; border-top: 1px dashed #999; padding-top: 10px; }
+.links { margin-top: 16px; border-top: 1px solid #c8c8c8; padding-top: 10px; }
 .link-item { margin-bottom: 6px; }
 .link-item a { color: #0000cc; text-decoration: underline; cursor: pointer; }
 .link-item.locked { color: #999; }
