@@ -128,6 +128,24 @@ nav('#/page/n_desktop'); await wait(20);
 await tryCombo('录音带', '还原的两个字');
 window.document.querySelector('.combo-btn').click(); await wait(20);
 
+// 雨幕车站大环节：候车大厅 → 病房 → 洗涤间/图书馆 → 站台 + 尾鸲频道 + 孩子们的旧约
+nav('#/page/n_station'); await wait(20);
+clickKw('售票窗口'); clickKw('红绳结扣'); clickKw('0415'); await wait(20);
+link('记忆回廊').click(); await wait(20);
+clickKw('地衣'); clickKw('刻痕'); await wait(20);
+link('洗涤间').click(); await wait(20);
+clickKw('「别信白大衣说的话。」'); await wait(20);
+nav('#/page/n_vault'); await wait(20);
+clickKw('没有瞳孔'); await wait(20);
+nav('#/page/n_platform'); await wait(20);
+clickKw('车票'); clickKw('金属片'); await wait(20);
+nav('#/page/n_contacts'); await wait(20);
+contact('尾鸲').click(); await wait(20);
+chatBtn('异地上传日志').click(); await wait(20);
+nav('#/page/n_desktop'); await wait(20);
+await tryCombo('方糖纸', '无瞳之眼');
+console.log('station chapter:', clues().includes('st_metal') && clues().includes('st_tail') && flags().f_kids === true);
+
 // 罗伦萨通讯 → 汇报 → 真相档案库 → 隐藏判词
 nav('#/page/n_contacts'); await wait(20);
 contact('罗伦萨').click(); await wait(20);
