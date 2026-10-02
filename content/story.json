@@ -364,7 +364,7 @@
           "to": "n_archive",
           "requires": {
             "flags": [
-              "f_archive_open"
+              "f_archive"
             ]
           },
           "hideIfLocked": true
@@ -1889,6 +1889,10 @@
           "to": "n_memory"
         },
         {
+          "label": "站台尽头的灯 · 末班车站台",
+          "to": "n_platform"
+        },
+        {
           "label": "« 返回工作台",
           "to": "n_desktop"
         }
@@ -1912,6 +1916,10 @@
         {
           "label": "三个书架 · 小图书馆（旧尾花）",
           "to": "n_vault"
+        },
+        {
+          "label": "站台尽头的灯 · 末班车站台",
+          "to": "n_platform"
         },
         {
           "label": "« 返回候车大厅",
