@@ -399,3 +399,18 @@ body[data-theme="retro2001"] {
 .chat-sys, .lock-hint, .invest-note, .dim, .side-reset, [class*="SYS_NOTE"] {
   font-family: "Courier New", "NSimSun", monospace;
 }
+
+/* ---- 侧栏关键词：限高内滚，页面不再被撑长 ---- */
+.kw-scroll {
+  max-height: 240px; overflow-y: auto;
+  padding-right: 4px;
+  border: 1px solid #b8b8b8;
+  background: #f7f7f7;
+  box-shadow: inset 1px 1px 0 0 #808080;
+  scrollbar-width: thin;
+}
+.kw-scroll .kw { padding: 1px 4px; }
+.kw-scroll .kw:hover { background: #e8eef8; }
+
+/* ---- 组合面板芯片区：同样限高 ---- */
+.combo-chips { max-height: 132px; overflow-y: auto; padding: 2px; scrollbar-width: thin; }

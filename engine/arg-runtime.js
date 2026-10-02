@@ -163,7 +163,8 @@
   // ---------- 侧栏 ----------
   function sidePanel(extra) {
     const p = progress();
-    const clueList = S.save.clues.map((c) => el('div', { class: 'kw' }, ['▪ ' + clueLabel(c)]));
+    const clueItems = S.save.clues.map((c) => el('div', { class: 'kw' }, ['▪ ' + clueLabel(c)]));
+    const clueList = clueItems.length ? [el('div', { class: 'kw-scroll' }, clueItems)] : clueItems;
     const suspects = (S.story.suspects || [])
       .map((s) => (typeof s === 'string' ? { name: s } : s))
       .filter((s) => !s.requires || evalRequires(s.requires).ok)
@@ -174,7 +175,7 @@
     return el('aside', { class: 'rv-side' }, [
       el('h3', null, ['线索进度 ' + p + '%']),
       el('div', { class: 'bar' }, [el('div', { class: 'bar-fill', style: 'width:' + p + '%' })]),
-      el('h3', null, ['已收集关键词']),
+      el('h3', null, ['已收集关键词 · ' + S.save.clues.length]),
       clueList.length ? clueList : [el('div', { class: 'dim' }, ['（暂无）'])],
       el('h3', null, ['嫌疑人']),
       suspectList,
