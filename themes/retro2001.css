@@ -1,13 +1,13 @@
 
-/* ============ 主题变量 · 亮色终端（纸上终端，默认） ============ */
+/* ============ 主题变量 · 亮色 Win2000 经典灰（默认） ============ */
 :root {
-  --bg: #F5F1E8; --panel: #FCFAF3; --border: #D9D2C0; --border-2: #C4BBA6;
-  --fg: #3C4148; --fg-reply: #2F3A33; --muted: #7A8090; --dim2: #A8ADB6;
-  --green: #1B7F3B; --cyan: #0F6E8C; --orange: #B35C00; --pink: #C2255C;
-  --green-sel: rgba(27,127,59,.22); --green-soft: rgba(27,127,59,.1);
-  --green-faint: rgba(27,127,59,.05);
-  --cyan-soft: rgba(15,110,140,.1); --pink-soft: rgba(194,37,92,.1);
-  --scan: rgba(0,0,0,.035);
+  --bg: #D4D0C8; --panel: #FCFCFA; --border: #808080; --border-2: #404040;
+  --fg: #1E1E1E; --fg-reply: #142B18; --muted: #6E6E6E; --dim2: #9A9A9A;
+  --green: #237A34; --cyan: #0F6E8C; --orange: #C05000; --pink: #B02050;
+  --green-sel: rgba(35,122,52,.25); --green-soft: rgba(35,122,52,.1);
+  --green-faint: rgba(35,122,52,.05);
+  --cyan-soft: rgba(15,110,140,.1); --pink-soft: rgba(176,32,80,.1);
+  --scan: rgba(0,0,0,.02);
 }
 /* ============ 暗色终端 · 荧光 CRT（可选） ============ */
 html[data-mode="dark"] {
@@ -418,3 +418,39 @@ body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; 
   0%   { opacity: 0; transform: translateY(6px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+
+/* ============ Win2000 经典质感（仅亮色默认主题） ============ */
+html:not([data-mode="dark"]) .kw-scroll .kw,
+html:not([data-mode="dark"]) .combo-chip,
+html:not([data-mode="dark"]) .search-chip,
+html:not([data-mode="dark"]) .contact-item,
+html:not([data-mode="dark"]) .btn,
+html:not([data-mode="dark"]) .link-item a {
+  background: #D4D0C8;
+  border: 1px solid;
+  border-color: #FFFFFF #404040 #404040 #FFFFFF;
+  box-shadow: 0 0 0 1px #808080;
+  border-radius: 0;
+  padding-left: 6px; padding-right: 6px;
+}
+html:not([data-mode="dark"]) .kw-scroll .kw:active,
+html:not([data-mode="dark"]) .combo-chip:active,
+html:not([data-mode="dark"]) .search-chip:active,
+html:not([data-mode="dark"]) .btn:active {
+  border-color: #404040 #FFFFFF #FFFFFF #404040;
+  background: #C8C4BC;
+}
+html:not([data-mode="dark"]) .link-item a { display: inline-block; margin-bottom: 2px; }
+html:not([data-mode="dark"]) .link-item a:hover { background: #D4D0C8; }
+html:not([data-mode="dark"]) .btn:active { background: #237A34; color: #FFFFFF; }
+/* 白色内容面板 + 灰色窗体底 */
+html:not([data-mode="dark"]) .rv-shell {
+  background: #D4D0C8;
+  border: 1px solid; border-color: #FFFFFF #404040 #404040 #FFFFFF;
+}
+html:not([data-mode="dark"]) .rv-window,
+html:not([data-mode="dark"]) .rv-side,
+html:not([data-mode="dark"]) .bubble,
+html:not([data-mode="dark"]) .combo-result-inner { background: #FCFCFA; }
+html:not([data-mode="dark"]) .kw-scroll { background: #FCFCFA; border-color: #808080; }
+html:not([data-mode="dark"]) .rv-titlebar { background: #D4D0C8; }
