@@ -385,7 +385,7 @@ html[data-mode="dark"] .combo-title::after {
 html[data-mode="dark"] .btn, html[data-mode="dark"] .combo-chip, html[data-mode="dark"] .search-chip, html[data-mode="dark"] .contact-item, html[data-mode="dark"] .link-item a, html[data-mode="dark"] .kw-inline {
   transition: color .15s, background-color .15s, border-color .15s;
 }
-html[data-mode="dark"] .bubble, html[data-mode="dark"] .card-sec, html[data-mode="dark"] .combo-result-inner, html[data-mode="dark"] .rv-main > * { will-change: opacity, transform; }
+/* will-change removed */
 
 /* 8) 无障碍：系统级减动效时全部动画静默 */
 @media (prefers-reduced-motion: reduce) {

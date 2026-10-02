@@ -246,8 +246,7 @@ body[data-theme="retro2001"] {
     inset 1px 1px 0 0 #ffffff,
     inset -2px -2px 0 0 #808080,
     inset 2px 2px 0 0 #dfdfdf,
-    2px 3px 0 0 rgba(0,30,30,.2),
-    5px 7px 18px rgba(0,25,25,.18);
+    2px 3px 0 0 rgba(0,30,30,.2);
 }
 .rv-window {
   border: none;
@@ -473,7 +472,7 @@ body[data-theme="retro2001"] {
 .btn, .combo-chip, .search-chip, .contact-item, .link-item a, .kw-inline {
   transition: color .15s, background-color .15s, border-color .15s;
 }
-.bubble, .card-sec, .combo-result-inner, .rv-main > * { will-change: opacity, transform; }
+/* will-change 已移除：会强制正文进 GPU 合成层导致文字发糊 */
 
 /* 8) 无障碍：系统级减动效时全部动画静默 */
 @media (prefers-reduced-motion: reduce) {
@@ -518,5 +517,5 @@ body, .btn, input, textarea {
 .files-path::before { content: "~/"; color: #237A34; }
 .link-item a::before { content: "➜ "; color: #6E6E6E; }
 .link-item.locked a::before { content: "✗ "; color: #9A9A9A; }
-.rv-main { font-size: 13.5px; line-height: 1.95; }
+.rv-main { font-size: 14px; line-height: 1.95; }
 .rv-main p, .rv-main li { font-size: inherit; }
