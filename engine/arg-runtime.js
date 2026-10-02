@@ -491,7 +491,7 @@
       if (selected.length < 2) { err.textContent = '请先选取两个关键词。'; return; }
       err.textContent = '';
       const key = selected.slice().sort().join('+');
-      const hit = combos.find((c) => (c.keywords || []).slice().sort().join('+') === key);
+      const hit = combos.find((c) => key === (c.keywords || []).slice().sort().join('+') || (c.altKeywords && key === c.altKeywords.slice().sort().join('+')));
       if (!hit) { const hints = S.story.comboHints || {}; err.textContent = hints[key] || hints[selected.slice().sort().reverse().join('+')] || '这两个关键词之间没有发现任何联系……换个组合试试。'; return; }
       if (!S.save.combos.includes(hit.id)) {
         S.save.combos.push(hit.id); persist();
