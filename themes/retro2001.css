@@ -207,3 +207,201 @@ body[data-theme="retro2001"] {
   z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,.35);
 }
 #arg-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============================================================
+   retro2001 · 质感精修层（v2.1）
+   原则：保留 Win2000 拟物语言，只做减噪、增真、加呼吸感
+   ============================================================ */
+
+/* ---- 全局氛围：CRT 扫描线 + 轻微暗角，压住纯色的塑料感 ---- */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9000;
+  background: repeating-linear-gradient(
+    0deg, rgba(0,0,0,.028) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9001;
+  background: radial-gradient(ellipse at center, transparent 62%, rgba(0,20,20,.16) 100%);
+}
+
+/* ---- 字体渲染：宋体在低分屏更利落 ---- */
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  padding: 28px 20px 48px;
+}
+::selection { background: #000080; color: #fff; }
+
+/* ---- 桌面底纹：从均匀圆点改为有景深的点阵 ---- */
+body[data-theme="retro2001"] {
+  background:
+    radial-gradient(1200px 700px at 30% 8%, rgba(255,255,255,.06), transparent 60%),
+    radial-gradient(#106868 1px, transparent 1px);
+  background-size: auto, 22px 22px;
+  background-color: #008080;
+}
+
+/* ---- 外壳：更真实的 98 凸浮雕（高光+暗影双线） ---- */
+.rv-shell {
+  border: none;
+  background: #c0c0c0;
+  padding: 3px;
+  box-shadow:
+    inset -1px -1px 0 0 #0a0a0a,
+    inset 1px 1px 0 0 #ffffff,
+    inset -2px -2px 0 0 #808080,
+    inset 2px 2px 0 0 #dfdfdf,
+    2px 3px 0 0 rgba(0,30,30,.35),
+    6px 8px 24px rgba(0,25,25,.35);
+}
+.rv-window {
+  border: none;
+  box-shadow:
+    inset -1px -1px 0 0 #0a0a0a,
+    inset 1px 1px 0 0 #808080,
+    inset -2px -2px 0 0 #808080,
+    inset 2px 2px 0 0 #ffffff;
+}
+
+/* ---- 标题栏：渐变更贴近 2000 的深海蓝，右侧加状态灯 ---- */
+.rv-titlebar {
+  background: linear-gradient(90deg, #000080 0%, #0a4a94 55%, #1084d0 130%);
+  text-shadow: 1px 1px 0 rgba(0,0,0,.55);
+  letter-spacing: .06em;
+  padding: 5px 10px;
+}
+
+/* ---- 正文：行长与呼吸感 ---- */
+.rv-main { font-size: 14.5px; line-height: 1.95; }
+.rv-main p { margin: 0 0 12px; }
+.rv-main p:last-child { margin-bottom: 0; }
+
+/* ---- 按钮：真按压感 ---- */
+.btn {
+  border: none; padding: 4px 14px; background: #ececec;
+  box-shadow:
+    inset -1px -1px 0 0 #0a0a0a,
+    inset 1px 1px 0 0 #ffffff,
+    inset -2px -2px 0 0 #808080,
+    inset 2px 2px 0 0 #dfdfdf;
+  transition: background .12s;
+}
+.btn:hover:not(:disabled) { background: #e0e8f4; }
+.btn:active:not(:disabled) {
+  background: #d4d4d4;
+  box-shadow:
+    inset 1px 1px 0 0 #0a0a0a,
+    inset -1px -1px 0 0 #ffffff,
+    inset 2px 2px 0 0 #808080;
+}
+.btn:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+
+/* ---- 链接：悬停底色反馈 ---- */
+.link-item a, .side-back a { transition: background .12s; padding: 0 2px; }
+.link-item a:hover, .side-back a:hover { background: #ffffe1; text-decoration-color: #000080; }
+
+/* ---- 输入框：内凹双线 ---- */
+.pwd-input, .chat-input, .search-input {
+  border: none;
+  box-shadow:
+    inset 1px 1px 0 0 #0a0a0a,
+    inset -1px -1px 0 0 #ffffff,
+    inset 2px 2px 0 0 #808080,
+    inset -2px -2px 0 0 #dfdfdf;
+}
+.pwd-input:focus, .chat-input:focus, .search-input:focus {
+  outline: none; background: #f4f8ff;
+  box-shadow:
+    inset 1px 1px 0 0 #0a0a0a,
+    inset -1px -1px 0 0 #ffffff,
+    inset 2px 2px 0 0 #808080,
+    inset -2px -2px 0 0 #dfdfdf,
+    inset 0 0 0 1px #0a4a94;
+}
+
+/* ---- 联系人列表：悬停有反应，选中态更立体 ---- */
+.contact-item {
+  border: none;
+  box-shadow: inset -1px -1px 0 0 #808080, inset 1px 1px 0 0 #ffffff;
+  transition: background .12s;
+}
+.contact-item:hover:not(.active) { background: #e4eaf4; }
+.contact-item.active {
+  background: #000080;
+  box-shadow: inset 1px 1px 0 0 #0a0a0a, inset -1px -1px 0 0 #ffffff;
+}
+
+/* ---- 气泡：圆角收敛到 2000 年代，边线更细腻 ---- */
+.bubble {
+  border-radius: 0;
+  border: 1px solid #c8c8c8;
+  box-shadow: 1px 1px 0 rgba(0,0,0,.08);
+}
+.bubble.reply { background: #eaf2e6; border-color: #c2d2bc; }
+.bubble.user { background: #e2eaf6; border-color: #b4c6e2; }
+.bubble.idea { border-style: dashed; }
+
+/* ---- 判词按钮：整行热区 + 危险悬停 ---- */
+.verdict-btn { transition: background .12s, color .12s; }
+.verdict-btn:hover:not(:disabled) { background: #f0e4e4; }
+
+/* ---- 组合面板：芯片按压一致化 ---- */
+.combo-chip, .search-chip {
+  border: none;
+  box-shadow: inset -1px -1px 0 0 #808080, inset 1px 1px 0 0 #ffffff;
+  transition: background .12s;
+}
+.combo-chip:hover:not(.active):not(.locked), .search-chip:hover:not(.locked) { background: #f2f6ec; }
+.combo-chip.active, .search-chip.done {
+  background: #dfe8d8;
+  box-shadow: inset 1px 1px 0 0 #808080, inset -1px -1px 0 0 #ffffff;
+}
+.combo-chip.active { background: #000080; color: #fff; }
+
+/* ---- 调查回传块：文件纸感 ---- */
+.invest-report {
+  background: #fbfcf8;
+  border: 1px dashed #8aa48a;
+  box-shadow: 2px 2px 0 rgba(0,60,60,.08);
+}
+
+/* ---- 结局标题：双线分隔，收尾感更强 ---- */
+.ending-title {
+  border-bottom: none;
+  padding-bottom: 10px; margin-bottom: 16px; letter-spacing: .08em;
+  box-shadow: 0 2px 0 0 #000080, 0 5px 0 0 #c0c0c0;
+}
+
+/* ---- Toast：终端弹报风格统一 ---- */
+#arg-toast {
+  border-radius: 0;
+  font-family: "Courier New", monospace;
+  letter-spacing: .05em;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.4), 0 0 0 1px #0a1a12;
+}
+
+/* ---- 滚动条：2000 银灰拟物 ---- */
+::-webkit-scrollbar { width: 16px; height: 16px; }
+::-webkit-scrollbar-track {
+  background: #dfdfdf;
+  background-image: radial-gradient(#c8c8c8 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  box-shadow:
+    inset -1px -1px 0 0 #0a0a0a,
+    inset 1px 1px 0 0 #ffffff,
+    inset -2px -2px 0 0 #808080,
+    inset 2px 2px 0 0 #dfdfdf;
+}
+::-webkit-scrollbar-button:single-button {
+  background: #c0c0c0; height: 16px; width: 16px;
+  box-shadow: inset -1px -1px 0 0 #0a0a0a, inset 1px 1px 0 0 #ffffff;
+}
+
+/* ---- 系统日志小字：等宽终端字 ---- */
+.chat-sys, .lock-hint, .invest-note, .dim, .side-reset, [class*="SYS_NOTE"] {
+  font-family: "Courier New", "NSimSun", monospace;
+}
