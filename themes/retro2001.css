@@ -454,3 +454,23 @@ html:not([data-mode="dark"]) .bubble,
 html:not([data-mode="dark"]) .combo-result-inner { background: #FCFCFA; }
 html:not([data-mode="dark"]) .kw-scroll { background: #FCFCFA; border-color: #808080; }
 html:not([data-mode="dark"]) .rv-titlebar { background: #D4D0C8; }
+/* ---- Win2000 亮色下去终端化：普通界面字体 + 去提示符装饰 ---- */
+html:not([data-mode="dark"]) body,
+html:not([data-mode="dark"]) .rv-main,
+html:not([data-mode="dark"]) .rv-side,
+html:not([data-mode="dark"]) .btn,
+html:not([data-mode="dark"]) input,
+html:not([data-mode="dark"]) textarea {
+  font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+}
+html:not([data-mode="dark"]) .rv-main h1::before,
+html:not([data-mode="dark"]) .wb-title::before,
+html:not([data-mode="dark"]) .login-title::before,
+html:not([data-mode="dark"]) .invest-cmd::before,
+html:not([data-mode="dark"]) .rv-side h3::before,
+html:not([data-mode="dark"]) .combo-hint::before,
+html:not([data-mode="dark"]) .files-path::before,
+html:not([data-mode="dark"]) .link-item a::before { content: none; }
+html:not([data-mode="dark"]) .rv-main p,
+html:not([data-mode="dark"]) .rv-main li { font-size: 14px; line-height: 1.9; }
+html:not([data-mode="dark"]) .rv-titlebar { font-family: "Microsoft YaHei", "Segoe UI", sans-serif; }
