@@ -74,12 +74,10 @@ input.value = 'ST17-0415';
 window.document.querySelector('.login-box .btn').click(); await wait(20);
 console.log('unlock -> contacts:', has('通讯记录'), '| loginUnlocked:', flags().loginUnlocked === true);
 
-// 通讯记录：威胁短信（需 ask2）、黑泽、南曲、柳莺
+// 通讯记录：单次直接揭示、威胁短信、黑泽、南曲、柳莺
 nav('#/page/n_lls_chat'); await wait(20);
 await ask('通讯记录');
-console.log('ask1 refused:', has('无可奉告'));
-await ask('再问一次');
-console.log('ask2 reply:', has('一条不落'));
+console.log('ask direct reply:', has('一条不落'));
 nav('#/page/n_contacts'); await wait(20);
 contact('威胁短信').click(); await wait(20);
 chatBtn('回复记录').click();
