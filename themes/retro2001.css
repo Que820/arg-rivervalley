@@ -414,3 +414,18 @@ body[data-theme="retro2001"] {
 
 /* ---- 组合面板芯片区：同样限高 ---- */
 .combo-chips { max-height: 132px; overflow-y: auto; padding: 2px; scrollbar-width: thin; }
+
+/* ---- 个人卡 · 档案更新段落 ---- */
+.card-sec {
+  background: #fbfbf3;
+  border-left: 3px solid #000080;
+  padding: 6px 10px;
+  margin: 8px 0;
+  box-shadow: 2px 2px 0 rgba(0,40,80,.08);
+}
+.card-locked {
+  font-family: "Courier New", "NSimSun", monospace;
+  font-size: 11px; color: #888;
+  padding: 4px 2px;
+  letter-spacing: .04em;
+}

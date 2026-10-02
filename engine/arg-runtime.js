@@ -215,10 +215,14 @@
 
   function renderBrowse(node) {
     const out = parasWithReports(node.body);
+    let locked = 0;
     (node.sections || []).forEach((sec) => {
-      if (sec.requires && !evalRequires(sec.requires).ok) return;
-      out.push.apply(out, parasWithReports(sec.text));
+      if (sec.requires && !evalRequires(sec.requires).ok) { locked++; return; }
+      out.push(el('div', { class: 'card-sec' }, parasWithReports(sec.text)));
     });
+    if (locked) {
+      out.push(el('div', { class: 'card-locked' }, ['〔档案更新 × ' + locked + ' ：随调查进度解锁〕']));
+    }
     out.push(nodeLinks(node));
     return out;
   }
