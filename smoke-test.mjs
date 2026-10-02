@@ -117,6 +117,19 @@ await tryCombo('缴费记录', '柳莺');
 await tryCombo('威胁短信', '样本编号');
 console.log('all clues:', clues().length, '/', Object.keys(story.clues).length, '| f_death:', flags().f_death === true);
 
+// 新环节：修复室 / 通风管 / 温室 / 磁带
+nav('#/page/n_restorer'); await wait(20);
+clickKw('「濯枝」'); await wait(20);
+nav('#/page/n_vents'); await wait(20);
+clickKw('数据卷轴'); await wait(20);
+nav('#/page/n_garden'); await wait(20);
+clickKw('一台民用定时器'); await wait(20);
+nav('#/page/n_tape'); await wait(20);
+clickKw('盒式磁带'); await wait(20);
+nav('#/page/n_desktop'); await wait(20);
+await tryCombo('录音带', '还原的两个字');
+window.document.querySelector('.combo-btn').click(); await wait(20);
+
 // 罗伦萨通讯 → 汇报 → 真相档案库 → 隐藏判词
 nav('#/page/n_contacts'); await wait(20);
 contact('罗伦萨').click(); await wait(20);
@@ -131,4 +144,5 @@ const hiddenBtn = [...window.document.querySelectorAll('button')].find(b => b.te
 console.log('hidden enabled:', hiddenBtn && !hiddenBtn.disabled);
 hiddenBtn.click(); await wait(20);
 console.log('true ending:', has('她还在'));
+console.log('new chapters all collected:', clues().length === Object.keys(story.clues).length, '| f_seed:', flags().f_seed === true);
 console.log('SMOKE DONE');

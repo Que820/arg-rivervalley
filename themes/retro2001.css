@@ -192,3 +192,18 @@ body[data-theme="retro2001"] {
 .combo-conclusion { border-top: 1px dashed #b8b878; margin-top: 6px; padding-top: 4px; }
 .kw-inline.got { cursor: pointer; color: #777; }
 .kw-inline.got:hover { color: #000080; }
+
+/* ---- 可点击关键词：更明显的热区与悬停反馈 ---- */
+.kw-inline { padding: 2px 4px; border-radius: 2px; transition: background .15s, color .15s; }
+.kw-inline:hover { background: #d8e6de; }
+.kw-inline.got:hover { background: transparent; }
+
+/* ---- 线索收集浮动提示 ---- */
+#arg-toast {
+  position: fixed; left: 50%; bottom: 36px; transform: translateX(-50%) translateY(20px);
+  background: #10301f; color: #d9f2e3; border: 1px solid #2f5d43;
+  padding: 8px 18px; font-size: 13px; border-radius: 3px;
+  opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s;
+  z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+#arg-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }

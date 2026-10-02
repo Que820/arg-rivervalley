@@ -48,7 +48,20 @@
     if (id && S.story.clues && S.story.clues[id] && !S.save.clues.includes(id)) {
       S.save.clues.push(id);
       persist();
+      toast('📌 线索已记录：' + clueLabel(id) + '　·　调查回传已展开在下方');
     }
+  }
+  let toastTimer = null;
+  function toast(msg) {
+    let t = document.getElementById('arg-toast');
+    if (!t) {
+      t = el('div', { id: 'arg-toast' }, []);
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.className = 'show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.className = ''; }, 2600);
   }
 
   // ---------- 路由（hash） ----------
