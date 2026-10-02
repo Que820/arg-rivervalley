@@ -143,4 +143,14 @@ console.log('hidden enabled:', hiddenBtn && !hiddenBtn.disabled);
 hiddenBtn.click(); await wait(20);
 console.log('true ending:', has('她还在'));
 console.log('new chapters all collected:', clues().length === Object.keys(story.clues).length, '| f_seed:', flags().f_seed === true);
+
+// 低进度结局可达性：独立速通脚本（全新 JSDOM，跳过柳莺线与新环节，20 条线索以下指认特因）
+import { execSync } from 'node:child_process';
+try {
+  const out = execSync(JSON.stringify(process.execPath) + ' rush-test.mjs', { encoding: 'utf8' });
+  console.log(out.trim().split('\n').pop());
+} catch (e) {
+  console.log((e.stdout || '').trim().split('\n').pop() || 'low-progress end1 reachable: false');
+  process.exit(1);
+}
 console.log('SMOKE DONE');

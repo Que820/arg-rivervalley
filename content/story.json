@@ -1348,7 +1348,7 @@
                   "clues": [
                     "n_photo"
                   ],
-                  "progressMin": 96
+                  "progressMin": 100
                 },
                 "ending": "n_end2"
               },
@@ -1369,7 +1369,7 @@
             "endings": [
               {
                 "requires": {
-                  "progressMin": 96
+                  "progressMin": 100
                 },
                 "ending": "n_end3"
               },
@@ -1389,7 +1389,7 @@
             "endings": [
               {
                 "requires": {
-                  "progressMin": 96
+                  "progressMin": 100
                 },
                 "ending": "n_end4"
               },
