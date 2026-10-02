@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ARG Framework</title>
-  <link rel="stylesheet" href="themes/retro2001.css?v=14">
+  <script>try{document.documentElement.dataset.mode=localStorage.getItem("arg-theme-mode")||""}catch(e){}</script>
+<link rel="stylesheet" href="themes/retro2001.css?v=15">
 </head>
 <body data-theme="retro2001">
   <div id="arg-root"></div>
@@ -13,7 +14,7 @@
   <script id="arg-story" src="content/story.json?v=11"></script>
 
   <!-- 引擎 -->
-  <script src="engine/arg-runtime.js?v=11"></script>
+  <script src="engine/arg-runtime.js?v=12"></script>
 
   <script>
     // fetch 剧情包 → 注入 window.ARG_STORY → 启动引擎

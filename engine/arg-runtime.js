@@ -48,7 +48,7 @@
     if (id && S.story.clues && S.story.clues[id] && !S.save.clues.includes(id)) {
       S.save.clues.push(id);
       persist();
-      toast('📌 线索已记录：' + clueLabel(id) + '　·　调查回传已展开在下方');
+      toast(' 线索已记录：' + clueLabel(id) + '　·　调查回传已展开在下方');
     }
   }
   let toastTimer = null;
@@ -157,7 +157,7 @@
     return out;
   }
   function disabledHint(missing) {
-    return '🔒 ' + (missing || []).join('；');
+    return ' ' + (missing || []).join('；');
   }
 
   // ---------- 侧栏 ----------
@@ -181,6 +181,13 @@
       suspectList,
       extra || null,
       el('div', { class: 'side-back' }, [el('a', { href: '#/page/' + S.story.meta.start }, ['« 返回工作台'])]),
+      el('div', { class: 'side-theme' }, [el('a', { href: 'javascript:void(0)', onclick: () => {
+        const root = document.documentElement;
+        const mode = root.dataset.mode === 'light' ? '' : 'light';
+        root.dataset.mode = mode;
+        try { localStorage.setItem('arg-theme-mode', mode); } catch (e) {}
+        this.textContent = mode === 'light' ? '◐ 切换暗色终端' : '◐ 切换亮色终端';
+      } }, [document.documentElement.dataset.mode === 'light' ? '◐ 切换暗色终端' : '◐ 切换亮色终端'])]),
       el('div', { class: 'side-reset' }, [el('a', { href: 'javascript:void(0)', onclick: () => {
         if (confirm('确定要重置存档、从头开始调查吗？此操作不可撤销。')) window.ARG.reset();
       } }, ['↺ 重置存档（从头开始）'])]),
@@ -319,7 +326,7 @@
     wrap.appendChild(pane);
 
     pane.appendChild(el('div', { class: 'chat-head' }, [
-      el('b', null, ['📡 ' + (node.contactName || '罗伦萨')]),
+      el('b', null, [' ' + (node.contactName || '罗伦萨')]),
       el('span', { class: 'dim' }, ['想问些什么就问——但他只回答有证据支撑的问题']),
     ]));
 
@@ -456,7 +463,7 @@
     if (!combos.length) return null;
     const owned = S.save.clues;
     const box = el('div', { class: 'combo-panel' });
-    box.appendChild(el('h3', { class: 'combo-title' }, ['🧩 关键词组合']));
+    box.appendChild(el('h3', { class: 'combo-title' }, [' 关键词组合']));
     box.appendChild(el('div', { class: 'dim combo-hint' }, ['从已收集的关键词中选取两条进行组合。']));
 
     const chips = el('div', { class: 'combo-chips' });
@@ -470,16 +477,16 @@
       });
       chips.appendChild(chip);
     });
-    // 🧭 组合罗盘：提示还有几组已集齐但未拼合的关键词
+    //  组合罗盘：提示还有几组已集齐但未拼合的关键词
     const ready = combos.filter((c) => !S.save.combos.includes(c.id) && (c.keywords || []).every((k) => owned.includes(k))).length;
     box.appendChild(el('div', { class: 'dim combo-compass' }, [ready > 0
-      ? '🧭 组合罗盘：你手里有 ' + ready + ' 组关键词看起来能拼在一起——选出它们，按下组合。'
-      : '🧭 组合罗盘：暂无可拼合的组合。继续调查，关键词之间会自己认亲。']));
+      ? ' 组合罗盘：你手里有 ' + ready + ' 组关键词看起来能拼在一起——选出它们，按下组合。'
+      : ' 组合罗盘：暂无可拼合的组合。继续调查，关键词之间会自己认亲。']));
     box.appendChild(chips);
 
     const result = el('div', { class: 'combo-result' });
     const err = el('div', { class: 'dim combo-err' });
-    const btn = el('button', { class: 'btn combo-btn' }, ['⚡ 尝试组合']);
+    const btn = el('button', { class: 'btn combo-btn' }, [' 尝试组合']);
     btn.addEventListener('click', () => {
       if (selected.length < 2) { err.textContent = '请先选取两个关键词。'; return; }
       err.textContent = '';
@@ -493,10 +500,10 @@
       if (hit.flag) { S.save.flags[hit.flag] = true; persist(); }
       result.innerHTML = '';
       const inner = el('div', { class: 'combo-result-inner' }, [
-        el('div', { class: 'combo-result-title' }, ['🧠 你的调查：' + (hit.title || '新的发现')]),
+        el('div', { class: 'combo-result-title' }, [' 你的调查：' + (hit.title || '新的发现')]),
         (hit.steps || []).map((st) => el('div', { class: 'combo-step' }, ['▸ ' + st])),
         el('div', { class: 'combo-conclusion' }, [paras(hit.result)]),
-        hit.to ? el('a', { href: '#/page/' + hit.to, onclick: (ev) => { ev.preventDefault(); enter(hit.to); } }, ['➜ 前往：' + ((S.nodes[hit.to] || {}).title || hit.to)]) : null,
+        hit.to ? el('a', { href: '#/page/' + hit.to, onclick: (ev) => { ev.preventDefault(); enter(hit.to); } }, [' 前往：' + ((S.nodes[hit.to] || {}).title || hit.to)]) : null,
       ]);
       result.appendChild(inner);
       render();
@@ -508,7 +515,7 @@
     combos.forEach((hit) => {
       if (S.save.combos.includes(hit.id)) {
         result.appendChild(el('div', { class: 'combo-result-inner done' }, [
-          el('div', { class: 'combo-result-title' }, ['✓ ' + (hit.title || '已解开的组合')]),
+          el('div', { class: 'combo-result-title' }, [' ' + (hit.title || '已解开的组合')]),
           paras(hit.result),
         ]));
       }
@@ -545,9 +552,9 @@
         el('header', { class: 'rv-titlebar' }, [(node.systemName || S.story.meta.systemName || S.story.meta.title) + ' — ' + (node.title || '')]),
         el('div', { class: 'rv-window' }, [el('div', { class: 'rv-main' }, [
           el('div', { class: 'login-box' }, [
-            el('div', { class: 'login-title' }, ['🔒 ' + (node.title || '')]),
+            el('div', { class: 'login-title' }, [' ' + (node.title || '')]),
             el('div', { class: 'dim login-hint' }, ['权限不足：' + disabledHint(evalRequires(node.lockRequires).missing)]),
-          ...((node.lockLinks || []).map((l) => el('a', { href: '#/page/' + l.to, class: 'login-link', style: 'display:block;margin-top:10px;' }, ['➜ ' + l.label]))),
+          ...((node.lockLinks || []).map((l) => el('a', { href: '#/page/' + l.to, class: 'login-link', style: 'display:block;margin-top:10px;' }, [' ' + l.label]))),
 
           ]),
         ]), sidePanel()]),
@@ -565,15 +572,15 @@
           inner = [
             el('div', { class: 'login-box' }, [
               el('div', { class: 'login-title' }, [node.systemName || node.title]),
-              el('div', { class: 'dim login-hint' }, ['🔒 解密模块离线。' + disabledHint(evalRequires(node.requires).missing)]),
+              el('div', { class: 'dim login-hint' }, [' 解密模块离线。' + disabledHint(evalRequires(node.requires).missing)]),
             ]),
           ];
         } else if (S.save.flags.loginUnlocked && node.success) {
           inner = [
             el('div', { class: 'login-box' }, [
               el('div', { class: 'login-title' }, [node.systemName || node.title]),
-              el('div', { class: 'dim login-hint' }, ['✓ 终端已解锁。']),
-              el('div', { class: 'login-actions' }, [el('a', { href: '#/page/' + node.success, onclick: (ev) => { ev.preventDefault(); enter(node.success); } }, ['➜ 进入' + ((S.nodes[node.success] || {}).title || '目标页面')])]),
+              el('div', { class: 'dim login-hint' }, [' 终端已解锁。']),
+              el('div', { class: 'login-actions' }, [el('a', { href: '#/page/' + node.success, onclick: (ev) => { ev.preventDefault(); enter(node.success); } }, [' 进入' + ((S.nodes[node.success] || {}).title || '目标页面')])]),
             ]),
           ];
         } else {
