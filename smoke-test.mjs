@@ -1,4 +1,5 @@
-import { JSDOM } from 'jsdom';
+
+import { JSDOM } from 'jsdom';
 import fs from 'fs';
 
 const story = JSON.parse(fs.readFileSync('content/story.json', 'utf8'));
@@ -54,7 +55,7 @@ link('打开理事会档案库').click(); await wait(20);
 link('T-001').click(); await wait(20);
 clickKw('抹除的名字'); await wait(20);
 nav('#/page/n_zhuizhi'); await wait(20);
-clickKw('木巳的批注'); clickKw('样本编号'); await wait(20);
+clickKw('木巳的批注'); clickKw('样本编号'); clickKw('「濯枝」'); await wait(20);
 console.log('zhuizhi clues:', clues().includes('z_note') && clues().includes('z_code'));
 
 // 组合 → 特蕾莎全真相 + 镜像
@@ -120,7 +121,7 @@ console.log('all clues:', clues().length, '/', Object.keys(story.clues).length, 
 
 // 新环节：修复室 / 通风管 / 温室 / 磁带
 nav('#/page/n_restorer'); await wait(20);
-clickKw('「濯枝」'); await wait(20);
+console.log('restorer reveals Jiu Ju:', has('「几居」'));
 nav('#/page/n_vents'); await wait(20);
 clickKw('数据卷轴'); await wait(20);
 nav('#/page/n_garden'); await wait(20);
@@ -128,12 +129,12 @@ clickKw('一台民用定时器'); await wait(20);
 nav('#/page/n_tape'); await wait(20);
 clickKw('盒式磁带'); await wait(20);
 nav('#/page/n_desktop'); await wait(20);
-await tryCombo('录音带', '还原的两个字');
+await tryCombo('录音带', '登记条上的样本名');
 window.document.querySelector('.combo-btn').click(); await wait(20);
 
 // 雨幕车站大环节：候车大厅 → 病房 → 洗涤间/图书馆 → 站台 + 尾鸲频道 + 孩子们的旧约
 nav('#/page/n_station'); await wait(20);
-clickKw('售票窗口'); clickKw('红绳结扣'); clickKw('0415'); await wait(20);
+clickKw('售票窗口'); clickKw('绳结扣'); clickKw('0415'); await wait(20);
 link('记忆回廊').click(); await wait(20);
 clickKw('地衣'); clickKw('刻痕'); await wait(20);
 link('洗涤间').click(); await wait(20);
@@ -166,7 +167,7 @@ const vBtns=[...window.document.querySelectorAll('button')].filter(b=>b.textCont
 console.log('verdict buttons:', vBtns.length, '| new endings wired:', ['罗伦萨','木槭','旧尾花'].every(n=>vBtns.some(b=>b.textContent.includes(n))));
 const hiddenBtn = [...window.document.querySelectorAll('button')].find(b => b.textContent.includes('隐藏判词'));
 console.log('hidden enabled:', hiddenBtn && !hiddenBtn.disabled);
-hiddenBtn.click(); await wait(20);
+hiddenBtn && hiddenBtn.click(); await wait(20);
 console.log('true ending:', has('她还在'));
 console.log('new chapters all collected:', clues().length === Object.keys(story.clues).length, '| f_seed:', flags().f_seed === true);
 
