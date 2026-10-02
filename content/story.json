@@ -106,6 +106,33 @@
         ],
         "progressMin": 100
       }
+    },
+    {
+      "name": "罗伦萨",
+      "page": "n_sus_lls",
+      "requires": {
+        "clues": [
+          "lls_reply"
+        ]
+      }
+    },
+    {
+      "name": "木槭",
+      "page": "n_sus_mujie",
+      "requires": {
+        "clues": [
+          "n_mujie"
+        ]
+      }
+    },
+    {
+      "name": "旧尾花",
+      "page": "n_sus_wei",
+      "requires": {
+        "clues": [
+          "st_eye"
+        ]
+      }
     }
   ],
   "combos": [
@@ -1562,6 +1589,33 @@
             "requires": {
               "clues": [
                 "st_tail"
+              ]
+            }
+          },
+          {
+            "label": "指认罗伦萨",
+            "ending": "n_end10",
+            "requires": {
+              "clues": [
+                "lls_reply"
+              ]
+            }
+          },
+          {
+            "label": "指认木槭",
+            "ending": "n_end11",
+            "requires": {
+              "clues": [
+                "n_mujie"
+              ]
+            }
+          },
+          {
+            "label": "指认旧尾花",
+            "ending": "n_end12",
+            "requires": {
+              "clues": [
+                "st_eye"
               ]
             }
           },

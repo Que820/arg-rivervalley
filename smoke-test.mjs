@@ -163,7 +163,7 @@ chatBtn('汇报').click(); await wait(20);
 console.log('truth page:', has('真相档案库'));
 nav('#/page/n_final_chat'); await wait(20);
 const vBtns=[...window.document.querySelectorAll('button')].filter(b=>b.textContent.includes('指认'));
-console.log('verdict buttons:', vBtns.length, '| end8/end9 wired:', vBtns.some(b=>b.textContent.includes('细雨')) && vBtns.some(b=>b.textContent.includes('尾鸲')));
+console.log('verdict buttons:', vBtns.length, '| new endings wired:', ['罗伦萨','木槭','旧尾花'].every(n=>vBtns.some(b=>b.textContent.includes(n))));
 const hiddenBtn = [...window.document.querySelectorAll('button')].find(b => b.textContent.includes('隐藏判词'));
 console.log('hidden enabled:', hiddenBtn && !hiddenBtn.disabled);
 hiddenBtn.click(); await wait(20);
