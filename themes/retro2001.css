@@ -1,6 +1,16 @@
 
-/* ============ 主题变量 · 暗色终端（默认） ============ */
+/* ============ 主题变量 · 亮色终端（纸上终端，默认） ============ */
 :root {
+  --bg: #F5F1E8; --panel: #FCFAF3; --border: #D9D2C0; --border-2: #C4BBA6;
+  --fg: #3C4148; --fg-reply: #2F3A33; --muted: #7A8090; --dim2: #A8ADB6;
+  --green: #1B7F3B; --cyan: #0F6E8C; --orange: #B35C00; --pink: #C2255C;
+  --green-sel: rgba(27,127,59,.22); --green-soft: rgba(27,127,59,.1);
+  --green-faint: rgba(27,127,59,.05);
+  --cyan-soft: rgba(15,110,140,.1); --pink-soft: rgba(194,37,92,.1);
+  --scan: rgba(0,0,0,.035);
+}
+/* ============ 暗色终端 · 荧光 CRT（可选） ============ */
+html[data-mode="dark"] {
   --bg: #0A0E12; --panel: #0D141B; --border: #1F2937; --border-2: #2B3A4A;
   --fg: #D9E4EE; --fg-reply: #EAF6EC; --muted: #6272A4; --dim2: #4B5563;
   --green: #4AF626; --cyan: #8BE9FD; --orange: #FFB86C; --pink: #FF79C6;
@@ -9,17 +19,7 @@
   --cyan-soft: rgba(139,233,253,.08); --pink-soft: rgba(255,121,198,.08);
   --scan: rgba(139,233,253,.025);
 }
-/* ============ 亮色终端 · 纸上终端 ============ */
-html[data-mode="light"] {
-  --bg: #F5F1E8; --panel: #FCFAF3; --border: #D9D2C0; --border-2: #C4BBA6;
-  --fg: #3C4148; --fg-reply: #2F3A33; --muted: #8A8F9C; --dim2: #A8ADB6;
-  --green: #1B7F3B; --cyan: #0F6E8C; --orange: #B35C00; --pink: #C2255C;
-  --green-sel: rgba(27,127,59,.22); --green-soft: rgba(27,127,59,.1);
-  --green-faint: rgba(27,127,59,.05);
-  --cyan-soft: rgba(15,110,140,.1); --pink-soft: rgba(194,37,92,.1);
-  --scan: rgba(0,0,0,.035);
-}
-html[data-mode="light"] body { color: #3C4148; }
+html[data-mode="dark"] body { color: #D9E4EE; }
 
 /* ARG Framework · Developer Terminal 主题
    参考: stylekit developer-terminal —— 网站即终端会话
@@ -305,7 +305,7 @@ body::before {
   max-height: 240px; overflow-y: auto;
   padding: 2px; border: 1px solid var(--border); background: var(--bg); border-radius: 2px;
 }
-.kw-scroll .kw { padding: 1px 4px; color: #B9C8D8; }
+.kw-scroll .kw { padding: 1px 4px; color: var(--fg); }
 .kw-scroll .kw::before { content: "▪ "; color: var(--green); }
 .kw-scroll .kw:hover { background: var(--cyan-soft); }
 
