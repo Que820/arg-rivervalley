@@ -306,3 +306,70 @@ body::before {
 /* ---- 渲染 ---- */
 body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 .rv-main { line-height: 2; }
+
+/* ============================================================
+   动画层 · Developer Terminal
+   原则：阶梯感（steps）、快、克制；prefers-reduced-motion 全关
+   ============================================================ */
+
+@keyframes dt-blink { 0%,49% { opacity:1; } 50%,100% { opacity:0; } }
+
+/* 1) 节点进入：stdout 逐行打出（阶梯上移淡入） */
+@keyframes dt-reveal {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.rv-main > * {
+  animation: dt-reveal .35s steps(6) both;
+}
+.rv-main > *:nth-child(1) { animation-delay: 0s; }
+.rv-main > *:nth-child(2) { animation-delay: .05s; }
+.rv-main > *:nth-child(3) { animation-delay: .10s; }
+.rv-main > *:nth-child(4) { animation-delay: .15s; }
+.rv-main > *:nth-child(5) { animation-delay: .20s; }
+.rv-main > *:nth-child(6) { animation-delay: .25s; }
+.rv-main > *:nth-child(n+7) { animation-delay: .30s; }
+
+/* 2) 聊天气泡：接收弹跳（参考 quick-jump-pop） */
+@keyframes dt-pop {
+  0%   { opacity: .78; transform: translateY(-4px) scale(.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.bubble { animation: dt-pop .18s steps(4) both; }
+.card-sec { animation: dt-reveal .3s steps(6) both; animation-delay: .1s; }
+
+/* 3) 组合成功结果：[ OK ] 打章式落定 */
+@keyframes dt-stamp {
+  0%   { opacity: 0; transform: scale(1.04); }
+  60%  { opacity: 1; transform: scale(.995); }
+  100% { transform: scale(1); }
+}
+.combo-result-inner { animation: dt-stamp .22s steps(5) both; }
+
+/* 4) Toast：已自带位移，加阶梯缓动 */
+#arg-toast { transition: opacity .25s steps(5), transform .25s steps(5); }
+
+/* 5) 主线索进度条：填充时阶梯推进 */
+.bar-fill { transition: width .4s steps(8); }
+
+/* 6) 待机彩蛋：长时间停留时提示符轻微呼吸（低调） */
+@keyframes dt-breathe { 0%,100% { opacity:.72; } 50% { opacity:1; } }
+.rv-titlebar::after { animation: dt-blink 1.06s steps(1,end) infinite; }
+.combo-title::after {
+  content: "▮"; color: #4AF626; margin-left: 6px;
+  animation: dt-blink 1.06s steps(1,end) infinite;
+}
+
+/* 7) 判词按钮 hover：警示色切换带 150ms 过渡（参考 transition-colors duration-150） */
+.btn, .combo-chip, .search-chip, .contact-item, .link-item a, .kw-inline {
+  transition: color .15s, background-color .15s, border-color .15s;
+}
+.bubble, .card-sec, .combo-result-inner, .rv-main > * { will-change: opacity, transform; }
+
+/* 8) 无障碍：系统级减动效时全部动画静默 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
