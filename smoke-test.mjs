@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom';
+import { JSDOM } from 'jsdom';
 import fs from 'fs';
 
 const story = JSON.parse(fs.readFileSync('content/story.json', 'utf8'));
@@ -66,6 +66,9 @@ chips().find(c => c.textContent.includes('全真相')).click();
 chips().find(c => c.textContent.includes('濯枝')).click();
 window.document.querySelector('.combo-btn').click(); await wait(20);
 console.log('combos:', has('特蕾莎＝几居') && has('镜像关系'));
+nav('#/page/n_desktop'); await wait(20);
+console.log('combo compass:', has('组合罗盘') && has('能拼在一起'));
+console.log('station combos:', (typeof story !== 'undefined' ? Object.keys(story.combos||{}).length >= 13 || (story.combos||[]).length >= 13 : false));
 
 // 终端：双前置解锁
 nav('#/page/n_login'); await wait(20);
@@ -145,6 +148,9 @@ chatBtn('异地上传日志').click(); await wait(20);
 nav('#/page/n_desktop'); await wait(20);
 await tryCombo('方糖纸', '无瞳之眼');
 console.log('station chapter:', clues().includes('st_metal') && clues().includes('st_tail') && flags().f_kids === true);
+nav('#/page/n_desktop'); await wait(20);
+{const btns=[...window.document.querySelectorAll('.combo-chip')];const byTxt=(t)=>btns.find(b=>b.textContent.includes(t));byTxt('幽灵少女') && byTxt('人格剥离截断数据') && (byTxt('幽灵少女').click(),byTxt('人格剥离截断数据').click());await wait(20);const tryBtn=[...window.document.querySelectorAll('.combo-btn')][0];if(tryBtn){tryBtn.click();await wait(20);}}
+console.log('c_face combo:', has('站台上的脸') || has('被同一场雨模糊的脸'), '| f_face:', flags().f_face === true);
 
 // 罗伦萨通讯 → 汇报 → 真相档案库 → 隐藏判词
 nav('#/page/n_contacts'); await wait(20);
@@ -164,13 +170,13 @@ hiddenBtn.click(); await wait(20);
 console.log('true ending:', has('她还在'));
 console.log('new chapters all collected:', clues().length === Object.keys(story.clues).length, '| f_seed:', flags().f_seed === true);
 
-// 低进度结局可达性：独立速通脚本（全新 JSDOM，跳过柳莺线与新环节，20 条线索以下指认特因）
-import { execSync } from 'node:child_process';
-try {
-  const out = execSync(JSON.stringify(process.execPath) + ' rush-test.mjs', { encoding: 'utf8' });
-  console.log(out.trim().split('\n').pop());
-} catch (e) {
-  console.log((e.stdout || '').trim().split('\n').pop() || 'low-progress end1 reachable: false');
-  process.exit(1);
-}
+// 低进度结局可达性：独立速通脚本（全新 JSDOM，跳过柳莺线与新环节，20 条线索以下指认特因）
+import { execSync } from 'node:child_process';
+try {
+  const out = execSync(JSON.stringify(process.execPath) + ' rush-test.mjs', { encoding: 'utf8' });
+  console.log(out.trim().split('\n').pop());
+} catch (e) {
+  console.log((e.stdout || '').trim().split('\n').pop() || 'low-progress end1 reachable: false');
+  process.exit(1);
+}
 console.log('SMOKE DONE');

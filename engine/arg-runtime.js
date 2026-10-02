@@ -465,7 +465,11 @@
       });
       chips.appendChild(chip);
     });
-    if (!owned.length) chips.appendChild(el('div', { class: 'dim' }, ['（还没有关键词，先去调查收集线索）']));
+    // 🧭 组合罗盘：提示还有几组已集齐但未拼合的关键词
+    const ready = combos.filter((c) => !S.save.combos.includes(c.id) && (c.keywords || []).every((k) => owned.includes(k))).length;
+    box.appendChild(el('div', { class: 'dim combo-compass' }, [ready > 0
+      ? '🧭 组合罗盘：你手里有 ' + ready + ' 组关键词看起来能拼在一起——选出它们，按下组合。'
+      : '🧭 组合罗盘：暂无可拼合的组合。继续调查，关键词之间会自己认亲。']));
     box.appendChild(chips);
 
     const result = el('div', { class: 'combo-result' });
