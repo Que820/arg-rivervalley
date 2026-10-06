@@ -222,6 +222,10 @@
     go(nodeId);
   }
 
+  function refreshSide() {
+    const aside = document.querySelector('aside.rv-side');
+    if (aside && aside.parentNode) aside.parentNode.replaceChild(sidePanel(), aside);
+  }
   function renderBrowse(node) {
     const out = parasWithReports(node.body);
     let locked = 0;
@@ -301,6 +305,7 @@
           if (o.clue) collectClue(o.clue);
           if (o.setFlag) { S.save.flags[o.setFlag] = true; persist(); }
           persist();
+          refreshSide();
           if (o.to) enter(o.to); else show(contact); // 只刷新当前会话，展示新解锁的选项
         });
         row.appendChild(btn);
@@ -350,6 +355,7 @@
       if (q.clue) collectClue(q.clue);
       if (q.setFlag) S.save.flags[q.setFlag] = true;
       persist();
+      refreshSide();
       showResult(t, q);
     }
     function submit() {
