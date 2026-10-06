@@ -188,6 +188,8 @@
         try { localStorage.setItem('arg-theme-mode', mode); } catch (e) {}
         this.textContent = mode === 'dark' ? '◐ 切换亮色终端' : '◐ 切换暗色终端';
       } }, [document.documentElement.dataset.mode === 'dark' ? '◐ 切换亮色终端' : '◐ 切换暗色终端'])]),
+      el('div', { class: 'side-tools' }, [el('a', { href: 'save.html', target: '_blank' }, ['💾 存档导出 / 导入'])]),
+      el('div', { class: 'side-tools' }, [el('a', { href: 'unlock.html', target: '_blank' }, ['🔓 全解锁存档'])]),
       el('div', { class: 'side-reset' }, [el('a', { href: 'javascript:void(0)', onclick: () => {
         if (confirm('确定要重置存档、从头开始调查吗？此操作不可撤销。')) window.ARG.reset();
       } }, ['↺ 重置存档（从头开始）'])]),

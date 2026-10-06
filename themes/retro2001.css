@@ -167,6 +167,8 @@ body[data-theme="retro2001"] {
 .invest-note { font-size: 11px; margin-top: 6px; }
 
 /* 侧栏重置入口 */
+.side-tools { margin-top: 10px; font-size: 11px; }
+.side-tools a { color: #000080; }
 .side-reset { margin-top: 14px; padding-top: 8px; border-top: 1px solid #999; font-size: 11px; }
 .side-reset a { color: #800000; }
 

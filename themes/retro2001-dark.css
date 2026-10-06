@@ -425,3 +425,6 @@ html[data-mode="dark"] .rv-main, html[data-mode="dark"] .rv-main p { color: var(
 html[data-mode="dark"] .rv-window { background: var(--panel); }
 
 html[data-mode="dark"] .no-anim > *, html[data-mode="dark"] .no-anim .bubble, html[data-mode="dark"] .no-anim .card-sec, html[data-mode="dark"] .no-anim .combo-result-inner, html[data-mode="dark"] .no-anim .bar-fill { animation: none !important; }
+
+html[data-mode="dark"] .side-tools { margin-top: 10px; font-size: 11px; }
+html[data-mode="dark"] .side-tools a { color: #8be9fd; }
