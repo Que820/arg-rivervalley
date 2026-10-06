@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>河谷疗养院案 · 存档管理</title>
+<style>
+  body{font-family:"Microsoft YaHei",sans-serif;background:#008080;color:#000;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+  .win{background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:2px 2px 0 #000;width:460px}
+  .bar{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;padding:4px 8px;font-weight:bold}
+  .bd{padding:16px;font-size:13px;line-height:1.8}
+  button{font-family:inherit;padding:6px 16px;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;cursor:pointer;margin-right:8px}
+  button:active{border-color:#404040 #fff #fff #404040}
+  input[type=file]{font-size:12px}
+  .ok{color:#008000;font-weight:bold}.err{color:#a00;font-weight:bold}
+  #preview{background:#fff;border:1px solid #808080;padding:8px;margin-top:8px;font-size:12px;max-height:150px;overflow:auto;white-space:pre-wrap}
+  a{color:#000080}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="bar">存档管理 · 河谷疗养院案</div>
+  <div class="bd">
+    <p><b>导出</b>：把当前游戏进度下载为存档文件。</p>
+    <button id="exp">导出当前存档</button>
+    <span id="expslot"></span>
+    <hr>
+    <p><b>导入</b>：选择存档文件覆盖当前进度（不可撤销）。</p>
+    <input type="file" id="imp" accept=".json,.sav,application/json">
+    <button id="doimp">确认导入</button>
+    <div id="preview"></div>
+    <p id="msg"></p>
+    <p><a href="unlock.html">全解锁直写</a> ｜ <a href="index.html#/page/n_desktop">返回游戏</a></p>
+  </div>
+</div>
+<script>
+const KEY='arg-rivervalley-v2';
+let pending=null;
+const $=(id)=>document.getElementById(id);
+function read(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+$('exp').onclick=function(){
+  const s=read();
+  if(!s||!(s.clues||[]).length){$('msg').innerHTML='<span class="err">当前没有可用存档。</span>';return;}
+  const meta=new Date().toISOString().slice(0,19).replace('T',' ');
+  const blob=new Blob([JSON.stringify({game:'rivervalley',version:s.version||2,savedAt:meta,save:s},null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='rivervalley_'+meta.replace(/[: ]/g,'-')+'.json';
+  a.click();
+  $('msg').innerHTML='<span class="ok">✔ 已导出</span>';
+};
+$('imp').onchange=function(e){
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{pending=JSON.parse(r.result);}catch(err){$('msg').innerHTML='<span class="err">文件不是合法 JSON。</span>';return;}
+    const s=pending.save||pending;
+    $('preview').textContent='线索 '+(s.clues||[]).length+' 条｜进度 '+(s.progress??'?')+'%｜旗标 '+Object.keys(s.flags||{}).length+' 个';
+    $('msg').textContent='';
+  };
+  r.readAsText(f);
+};
+$('doimp').onclick=function(){
+  if(!pending){$('msg').innerHTML='<span class="err">请先选择文件。</span>';return;}
+  const s=pending.save||pending;
+  if(!s.clues){$('msg').innerHTML='<span class="err">缺少 clues 字段，不是本游戏存档。</span>';return;}
+  localStorage.setItem(KEY,JSON.stringify(s));
+  $('msg').innerHTML='<span class="ok">✔ 导入完成，去游戏里继续吧。</span>';
+};
+(()=>{const s=read();$('expslot').textContent=s&&s.clues?('当前：'+s.clues.length+' 线索 / '+(s.progress??0)+'%'):'';})();
+</script>
+</body>
+</html>

@@ -354,7 +354,9 @@
       const t = input.value.trim();
       if (!t) return;
       input.value = '';
-      const q = (node.queries || []).find((x) => x.term === t || (x.alias || []).indexOf(t) >= 0);
+      const q = (node.queries || []).find((x) =>
+        t.indexOf(x.term) >= 0 || x.term.indexOf(t) >= 0 ||
+        (x.alias || []).some((a) => t.indexOf(a) >= 0 || a.indexOf(t) >= 0));
       if (!q || (q.hideRequires && !evalRequires(q.hideRequires).ok)) {
         // 未收录的词：按 idle 词条匹配人物/场景，给出罗伦萨的想法；否则轮换兜底想法
         const idle = (node.idle || []).find((x) =>

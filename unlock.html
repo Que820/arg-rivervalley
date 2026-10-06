@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>河谷疗养院案 · 全解锁</title>
+<style>
+  body{font-family:"Microsoft YaHei",sans-serif;background:#008080;color:#000;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+  .win{background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:2px 2px 0 #000;padding:0;width:420px}
+  .bar{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;padding:4px 8px;font-weight:bold}
+  .bd{padding:16px;font-size:13px;line-height:1.8}
+  button{font-family:inherit;padding:6px 18px;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;cursor:pointer}
+  button:active{border-color:#404040 #fff #fff #404040}
+  .ok{color:#008000;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="bar">记忆修复室 · 存档直写工具</div>
+  <div class="bd">
+    <p>将把 <b>全部 36 条线索、全部旗标（含密码知晓/档案库权限）、进度 100%</b> 写入本站存档。</p>
+    <p>⚠️ 会覆盖你当前的游戏存档。</p>
+    <button id="go">写入全解锁存档</button>
+    <p id="msg"></p>
+    <p><a href="/index.html#/page/n_desktop">→ 返回游戏（写入后点击）</a></p>
+  </div>
+</div>
+<script>
+document.getElementById('go').onclick=async function(){
+  const res=await fetch('content/story.json'); const story=await res.json();
+  const s=JSON.stringify(story);
+  const flags=new Set([...s.matchAll(/"(setFlag|enterFlag|flag)":\s*"([^"]+)"/g)].map(m=>m[2]));
+  [...s.matchAll(/"(setFlags|enterFlags)":\s*\[([^\]]*)\]/g)].forEach(m=>[...m[2].matchAll(/"([^"]+)"/g)].forEach(x=>flags.add(x[1])));
+  const KEY='arg-rivervalley-v2';
+  let save={};
+  try{save=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
+  save.clues=Object.keys(story.clues);
+  save.flags=Object.fromEntries([...flags].map(f=>[f,true]));
+  save.visited=story.nodes.map(n=>n.id);
+  save.progress=100;
+  localStorage.setItem(KEY,JSON.stringify(save));
+  document.getElementById('msg').innerHTML='<span class="ok">✔ 写入完成：'+save.clues.length+' 条线索 / '+Object.keys(save.flags).length+' 个旗标 / 100%</span>';
+};
+</script>
+</body>
+</html>
