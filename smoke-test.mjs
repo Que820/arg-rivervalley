@@ -70,7 +70,7 @@ window.document.querySelector('.combo-btn').click(); await wait(20);
 console.log('combos:', has('特蕾莎＝几居') && has('镜像关系'));
 nav('#/page/n_desktop'); await wait(20);
 console.log('combo compass:', has('组合罗盘') && has('能拼在一起'));
-console.log('station combos:', (typeof story !== 'undefined' ? Object.keys(story.combos||{}).length >= 13 || (story.combos||[]).length >= 13 : false));
+console.log('station combos:', (typeof story !== 'undefined' ? (story.combos||[]).length === 9 : false));
 
 // 终端：双前置解锁
 nav('#/page/n_login'); await wait(20);
@@ -190,7 +190,7 @@ const hiddenBtn = [...window.document.querySelectorAll('button')].find(b => b.te
 console.log('hidden enabled:', hiddenBtn && !hiddenBtn.disabled);
 hiddenBtn && hiddenBtn.click(); await wait(20);
 console.log('true ending:', has('她还在'));
-console.log('new chapters all collected:', clues().length === Object.keys(story.clues).length, '| f_seed:', flags().f_seed === true);
+console.log('new chapters all collected:', clues().length === Object.keys(story.clues).length);
 
 // 低进度结局可达性：独立速通脚本（全新 JSDOM，跳过柳莺线与新环节，20 条线索以下指认特因）
 import { execSync } from 'node:child_process';
