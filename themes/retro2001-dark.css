@@ -437,3 +437,9 @@ html[data-mode="dark"] .puzzle-frag:hover { background: rgba(30,80,30,.6); }
 html[data-mode="dark"] .puzzle-digit { border-color: #3a5a3a; background: #041004; color: #4af626; }
 html[data-mode="dark"] .puzzle-err { color: #ff7a7a; }
 html[data-mode="dark"] .puzzle-done { color: #4af626; }
+
+/* 拖拽排序（槽位版） */
+html[data-mode="dark"] .puzzle-slot { border-color: #3a5a3a; color: #7a9a7a; }
+html[data-mode="dark"] .puzzle-slot.filled { border-color: #5a8a5a; color: #c8ffc8; background: rgba(0,40,0,.5); }
+html[data-mode="dark"] .puzzle-slot.drag-over { border-color: #8f8; background: rgba(30,80,30,.5); }
+html[data-mode="dark"] .puzzle-frag.dragging { box-shadow: 0 4px 14px rgba(0,0,0,.6); }

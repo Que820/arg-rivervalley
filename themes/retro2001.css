@@ -548,3 +548,12 @@ body, .btn, input, textarea {
 .quiz-opt { display: block; width: 100%; text-align: left; margin-bottom: 6px; }
 .puzzle-done { font-weight: bold; color: #008000; margin-bottom: 4px; }
 .puzzle-success-p { margin: 4px 0; }
+
+/* 拖拽排序（槽位版） */
+.puzzle-slots { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.puzzle-slot { border: 1px dashed #999; padding: 6px 8px; min-height: 1.8em; color: #777; font-size: .85em; }
+.puzzle-slot.filled { border-style: solid; color: #111; font-size: 1em; background: #f4f4f4; }
+.puzzle-slot.drag-over { border-color: #060; background: #e0ffe0; }
+.puzzle-frag { touch-action: none; -webkit-user-select: none; user-select: none; cursor: grab; }
+.puzzle-frag:active { cursor: grabbing; }
+.puzzle-frag.dragging { position: relative; z-index: 10; opacity: .88; box-shadow: 0 4px 14px rgba(0,0,0,.3); }

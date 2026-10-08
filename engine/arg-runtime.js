@@ -285,27 +285,76 @@
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'order') {
       const order = pz.data.displayOrder || pz.data.items.map((_, i) => i);
-      const items = order.map((src, disp) => ({ t: pz.data.items[src], i: src, disp }));
+      const items = order.map((src) => ({ t: pz.data.items[src], i: src }));
       const picked = [];
-      const listEl = el('div', { class: 'puzzle-order' });
+      const nSlots = items.length;
+      const poolEl = el('div', { class: 'puzzle-order' });
+      const slotsEl = el('div', { class: 'puzzle-slots' });
+      body.appendChild(slotsEl);
+      body.appendChild(poolEl);
+      const seqEl = el('div', { class: 'dim puzzle-hint' }, ['拖动残像到编号槽位（或点击放入空槽）。放满后自动校验。']);
+      body.appendChild(seqEl);
+
+      const mkDrag = (c) => {
+        let dragging = false, pid = null, sx = 0, sy = 0;
+        c.addEventListener('pointerdown', (ev) => {
+          dragging = true; pid = ev.pointerId; sx = ev.clientX; sy = ev.clientY;
+          try { c.setPointerCapture(pid); } catch (e) {}
+          c.classList.add('dragging'); ev.preventDefault();
+        });
+        c.addEventListener('pointermove', (ev) => {
+          if (!dragging || ev.pointerId !== pid) return;
+          c.style.transform = 'translate3d(' + (ev.clientX - sx) + 'px,' + (ev.clientY - sy) + 'px,0)';
+          const t = document.elementFromPoint(ev.clientX, ev.clientY);
+          slotsEl.querySelectorAll('.puzzle-slot').forEach((sl) => sl.classList.remove('drag-over'));
+          const sl = t && t.closest ? t.closest('.puzzle-slot') : null;
+          if (sl && !sl.firstChild) sl.classList.add('drag-over');
+        });
+        const finish = (ev) => {
+          if (!dragging) return;
+          dragging = false;
+          c.classList.remove('dragging');
+          c.style.transform = '';
+          slotsEl.querySelectorAll('.puzzle-slot').forEach((sl) => sl.classList.remove('drag-over'));
+          const t = document.elementFromPoint(ev.clientX, ev.clientY);
+          const sl = t && t.closest ? t.closest('.puzzle-slot') : null;
+          if (sl && !sl.classList.contains('filled')) place(+c.getAttribute('data-src'), +sl.getAttribute('data-slot'));
+        };
+        c.addEventListener('pointerup', finish);
+        c.addEventListener('pointercancel', finish);
+        c.addEventListener('click', () => {
+          const k = picked.length;
+          if (k < nSlots) place(+c.dataset.src, k);
+        });
+      };
+
+      const place = (src, slot) => {
+        picked[slot] = src;
+        if (picked.filter((v) => v !== undefined).length === nSlots) {
+          if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
+          else { picked.length = 0; fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); return; }
+        }
+        redraw();
+      };
+
       const redraw = () => {
-        listEl.innerHTML = '';
+        slotsEl.innerHTML = '';
+        for (let k = 0; k < nSlots; k++) {
+          const sl = el('div', { class: 'puzzle-slot', 'data-slot': String(k) }, [String(k + 1) + '.']);
+          if (picked[k] !== undefined) {
+            sl.classList.add('filled');
+            sl.textContent = String(k + 1) + '. ' + items.filter((x) => x.i === picked[k])[0].t;
+          }
+          slotsEl.appendChild(sl);
+        }
+        poolEl.innerHTML = '';
         items.filter((it) => picked.indexOf(it.i) < 0).forEach((it) => {
-          const c = el('div', { class: 'puzzle-frag' }, [it.t]);
-          c.addEventListener('click', () => {
-            picked.push(it.i);
-            if (picked.length === items.length) {
-              if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
-              else { picked.length = 0; fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); }
-            } else redraw();
-          });
-          listEl.appendChild(c);
+          const c = el('div', { class: 'puzzle-frag', 'data-src': String(it.i) }, [it.t]);
+          mkDrag(c);
+          poolEl.appendChild(c);
         });
       };
       redraw();
-      body.appendChild(listEl);
-      const seqEl = el('div', { class: 'dim puzzle-hint' });
-      body.appendChild(seqEl);
     } else if (pz.kind === 'dials') {
       const n = pz.target.length;
       const vals = new Array(n).fill(0);
