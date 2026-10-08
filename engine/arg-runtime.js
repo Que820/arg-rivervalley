@@ -262,6 +262,11 @@
     const body = el('div', { class: 'puzzle-body' });
     const err = el('div', { class: 'puzzle-err dim' });
     wrap.push(body, err);
+    const fail = (m) => {
+      err.textContent = m;
+      const box = err.closest('.puzzle-box');
+      if (box) { box.classList.remove('anim-shake'); void box.offsetWidth; box.classList.add('anim-shake'); }
+    };
     const solve = () => {
       S.save.solved[pz.id] = true;
       (pz.reward || []).forEach((c) => collectClue(c));
@@ -274,7 +279,7 @@
       rng.addEventListener('input', () => { val.textContent = fmt(+rng.value) + ' ' + (pz.unit || ''); });
       const btn = el('button', { class: 'btn', onclick: () => {
         if (Math.abs(+rng.value - pz.target) <= (pz.tolerance || 0)) solve();
-        else err.textContent = pz.wrongHint || '只有沙沙声。再调。';
+        else fail(pz.wrongHint || '只有沙沙声。再调。');
       } }, ['接收']);
       body.appendChild(el('div', { class: 'puzzle-row' }, [rng, val, btn]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
@@ -291,7 +296,7 @@
             picked.push(it.i);
             if (picked.length === items.length) {
               if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
-              else { picked.length = 0; err.textContent = pz.wrongHint || '顺序不对。残像散开了，重来。'; redraw(); }
+              else { picked.length = 0; fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); }
             } else redraw();
           });
           listEl.appendChild(c);
@@ -321,7 +326,7 @@
       }
       const btn = el('button', { class: 'btn', onclick: () => {
         if (vals.join('') === pz.target) solve();
-        else err.textContent = pz.wrongHint || '芯片没有反应。';
+        else fail(pz.wrongHint || '芯片没有反应。');
       } }, ['启动']);
       body.appendChild(el('div', { class: 'puzzle-row' }, [row, btn]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
@@ -333,7 +338,7 @@
       const mkStep = (dv, getv, setv) => () => { setv(getv() + dv); up(); };
       const btn = el('button', { class: 'btn', onclick: () => {
         if (hv === pz.targetHour && mv === pz.targetMin) solve();
-        else err.textContent = pz.wrongHint || '定时器没响。时间不对。';
+        else fail(pz.wrongHint || '定时器没响。时间不对。');
       } }, ['校准']);
       body.appendChild(el('div', { class: 'puzzle-row puzzle-clock' }, [
         el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▲']), h, el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▼'])]),
@@ -346,7 +351,7 @@
       (pz.data.options || []).forEach((op) => {
         const b = el('button', { class: 'btn quiz-opt', onclick: () => {
           if (op.ok) { solve(); if (pz.goto) enter(pz.goto); }
-          else err.textContent = op.hint || '这份陈述站不住脚。再想想。';
+          else fail(op.hint || '这份陈述站不住脚。再想想。');
         } }, [op.text]);
         body.appendChild(b);
       });

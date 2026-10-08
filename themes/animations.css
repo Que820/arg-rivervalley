@@ -1,0 +1,794 @@
+/* ============================================================
+   animations.css — 动画库（官方代码来源：stylekit.top/zh/animations）
+   仅做缩进拼合与游戏挂载层，@keyframes 与类定义均为 StyleKit 官方原样代码。
+   ============================================================ */
+
+/* ---- fade-in-up ---- */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  --sk-duration: 600ms;
+  --sk-delay: 0ms;
+  --sk-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  animation: fade-in-up var(--sk-duration) var(--sk-ease) var(--sk-delay) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- scale-in ---- */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-in {
+  --sk-duration: 400ms;
+  --sk-delay: 0ms;
+  --sk-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  animation: scale-in var(--sk-duration) var(--sk-ease) var(--sk-delay) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scale-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- bounce-in ---- */
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bounce-in {
+  --sk-duration: 600ms;
+  --sk-delay: 0ms;
+  --sk-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+  animation: bounce-in var(--sk-duration) var(--sk-ease) var(--sk-delay) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bounce-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- shake ---- */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 50% {
+    transform: translateX(-10px);
+  }
+  20%, 60% {
+    transform: translateX(10px);
+  }
+  30%, 70% {
+    transform: translateX(-8px);
+  }
+  40%, 80% {
+    transform: translateX(6px);
+  }
+  90% {
+    transform: translateX(-4px);
+  }
+}
+
+.shake {
+  will-change: transform;
+  animation: shake 500ms ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shake {
+    animation: none;
+  }
+}
+
+/* ---- pulse ---- */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+  }
+}
+
+/* ---- shimmer ---- */
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 37%,
+    #f0f0f0 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  border-radius: 0.375rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+    background: #e5e7eb;
+  }
+}
+
+/* ---- blur-in ---- */
+@keyframes blur-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.blur-in {
+  --sk-duration: 500ms;
+  --sk-delay: 0ms;
+  --sk-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: filter, opacity;
+  animation: blur-in var(--sk-duration) var(--sk-ease) var(--sk-delay) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blur-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- hover-lift ---- */
+.hover-lift {
+  will-change: transform, box-shadow;
+  transition: transform 200ms cubic-bezier(0.33, 1, 0.68, 1),
+              box-shadow 200ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 20px -8px rgba(0, 0, 0, 0.15),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ---- underline-draw ---- */
+.underline-draw {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-draw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.underline-draw:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .underline-draw::after {
+    transition: none;
+  }
+}
+
+/* ---- stagger-children ---- */
+@keyframes stagger-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-children > * {
+  will-change: transform, opacity;
+  opacity: 0;
+  animation: stagger-fade-in 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--stagger-index, 0) * var(--stagger-delay, 75ms));
+}
+
+/* Usage: set --stagger-index on each child via inline style
+   <div class="stagger-children">
+     <div style="--stagger-index: 0">...</div>
+     <div style="--stagger-index: 1">...</div>
+     <div style="--stagger-index: 2">...</div>
+   </div>
+   Override delay: style="--stagger-delay: 100ms" on parent */
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-children {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- spotlight-card ---- */
+"use client";
+
+import { useRef, useState } from "react";
+
+export function SpotlightCard({ children }: { children: React.ReactNode }) {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return;
+    const rect = divRef.current.getBoundingClientRect();
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  return (
+    <div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setOpacity(1)}
+      onMouseLeave={() => setOpacity(0)}
+      className="relative overflow-hidden border border-white/10 bg-black/20 p-8"
+    >
+      <div
+        className="pointer-events-none absolute -inset-px transition-opacity duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(255,255,255,0.1), transparent 40%)`,
+        }}
+      />
+      <div className="relative z-10">{children}</div>
+    </div>
+  );
+}
+
+/* ---- border-trace ---- */
+/* Approach 1: Gradient border with background-size animation */
+@keyframes border-trace {
+  0% {
+    background-size: 0 2px, 2px 0, 0 2px, 2px 0;
+  }
+  25% {
+    background-size: 100% 2px, 2px 0, 0 2px, 2px 0;
+  }
+  50% {
+    background-size: 100% 2px, 2px 100%, 0 2px, 2px 0;
+  }
+  75% {
+    background-size: 100% 2px, 2px 100%, 100% 2px, 2px 0;
+  }
+  100% {
+    background-size: 100% 2px, 2px 100%, 100% 2px, 2px 100%;
+  }
+}
+
+.border-trace {
+  position: relative;
+  background:
+    linear-gradient(currentColor, currentColor) top left / 0 2px no-repeat,
+    linear-gradient(currentColor, currentColor) top right / 2px 0 no-repeat,
+    linear-gradient(currentColor, currentColor) bottom right / 0 2px no-repeat,
+    linear-gradient(currentColor, currentColor) bottom left / 2px 0 no-repeat;
+  transition: background-size 600ms ease-in-out;
+}
+
+.border-trace:hover {
+  background-size: 100% 2px, 2px 100%, 100% 2px, 2px 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .border-trace {
+    transition: none;
+    border: 2px solid currentColor;
+  }
+  .border-trace:hover {
+    background: none;
+  }
+}
+
+/* ---- progress-bar ---- */
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+@keyframes progress-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+.progress-bar {
+  height: 4px;
+  border-radius: 9999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    #6366f1 0%,
+    #818cf8 50%,
+    #6366f1 100%
+  );
+  background-size: 200% 100%;
+  animation:
+    progress-fill 2s ease-in-out both,
+    progress-shimmer 1.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar-fill {
+    animation: none;
+    width: 100%;
+  }
+}
+
+/* ---- skeleton-pulse ---- */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.skeleton-pulse {
+  background-color: #e5e7eb;
+  border-radius: 0.375rem;
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-pulse {
+    animation: none;
+  }
+}
+
+/* ---- marquee-scroll ---- */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Wrapper hides overflow, inner track holds duplicated content */
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-track {
+  display: inline-flex;
+  will-change: transform;
+  animation: marquee-scroll 20s linear infinite;
+}
+
+/* Duplicate content inside .marquee-track for seamless loop:
+   <div class="marquee">
+     <div class="marquee-track">
+       <span>Item 1 - Item 2 - Item 3 -&nbsp;</span>
+       <span>Item 1 - Item 2 - Item 3 -&nbsp;</span>
+     </div>
+   </div>
+*/
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* ---- text-reveal ---- */
+@keyframes text-reveal {
+  from {
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.text-reveal {
+  --sk-duration: 800ms;
+  --sk-delay: 0ms;
+  --sk-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  animation: text-reveal var(--sk-duration) var(--sk-ease) var(--sk-delay) both;
+}
+
+/* Stagger each line */
+.text-reveal:nth-child(2) { --sk-delay: 120ms; }
+.text-reveal:nth-child(3) { --sk-delay: 240ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .text-reveal {
+    animation: none;
+    clip-path: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- counter-roll ---- */
+@keyframes counter-roll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(var(--counter-target, -9) * -1em));
+  }
+}
+
+.counter-roll-container {
+  display: inline-flex;
+  overflow: hidden;
+  height: 1em;
+  line-height: 1;
+}
+
+.counter-roll-digit {
+  will-change: transform;
+  animation: counter-roll 2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--digit-index, 0) * 150ms);
+}
+
+/* Each digit column contains 0-9 stacked vertically */
+.counter-roll-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.counter-roll-column span {
+  height: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .counter-roll-digit {
+    animation: none;
+    overflow: visible;
+    width: auto;
+  }
+}
+
+/* ---- typewriter ---- */
+$ Hello, World!
+
+/* ---- text-scramble ---- */
+/* Text scramble relies on JavaScript to swap characters.
+   CSS handles the smooth cursor and container styling. */
+
+.text-scramble {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  display: inline-block;
+  white-space: pre;
+}
+
+.text-scramble-char {
+  display: inline-block;
+  will-change: opacity;
+  transition: opacity 80ms ease-out;
+}
+
+.text-scramble-char[data-resolved="false"] {
+  opacity: 0.5;
+  color: var(--scramble-color, #00ffff);
+}
+
+.text-scramble-char[data-resolved="true"] {
+  opacity: 1;
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-scramble-char {
+    transition: none;
+    opacity: 1 !important;
+    color: inherit !important;
+  }
+}
+
+/* ---- glitch-text ---- */
+/* 3-layer glitch: original text + 2 pseudo-element copies */
+@keyframes glitch-1 {
+  0% {
+    clip-path: inset(40% 0 61% 0);
+    transform: translate(-2px, 2px);
+  }
+  20% {
+    clip-path: inset(92% 0 1% 0);
+    transform: translate(1px, -1px);
+  }
+  40% {
+    clip-path: inset(43% 0 1% 0);
+    transform: translate(-1px, 3px);
+  }
+  60% {
+    clip-path: inset(25% 0 58% 0);
+    transform: translate(3px, 1px);
+  }
+  80% {
+    clip-path: inset(54% 0 7% 0);
+    transform: translate(-3px, -2px);
+  }
+  100% {
+    clip-path: inset(58% 0 43% 0);
+    transform: translate(2px, -3px);
+  }
+}
+
+@keyframes glitch-2 {
+  0% {
+    clip-path: inset(65% 0 13% 0);
+    transform: translate(3px, -1px);
+  }
+  20% {
+    clip-path: inset(15% 0 72% 0);
+    transform: translate(-2px, 3px);
+  }
+  40% {
+    clip-path: inset(80% 0 5% 0);
+    transform: translate(1px, -2px);
+  }
+  60% {
+    clip-path: inset(10% 0 65% 0);
+    transform: translate(-3px, 1px);
+  }
+  80% {
+    clip-path: inset(35% 0 30% 0);
+    transform: translate(2px, 2px);
+  }
+  100% {
+    clip-path: inset(2% 0 90% 0);
+    transform: translate(-1px, -1px);
+  }
+}
+
+.glitch-text {
+  position: relative;
+  will-change: transform;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform, clip-path;
+}
+
+.glitch-text::before {
+  color: #ff00ff;
+  animation: glitch-1 3s steps(2, end) infinite;
+}
+
+.glitch-text::after {
+  color: #00ffff;
+  animation: glitch-2 3s steps(2, end) infinite reverse;
+}
+
+/* Usage: <h1 class="glitch-text" data-text="GLITCH">GLITCH</h1> */
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch-text::before,
+  .glitch-text::after {
+    animation: none;
+    display: none;
+  }
+}
+
+/* ---- ripple-click ---- */
+@keyframes ripple-click {
+  from {
+    opacity: 0.6;
+    transform: scale(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(4);
+  }
+}
+
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  margin-left: -20px;
+  background: var(--ripple-color, hsl(0 0% 0% / 0.15));
+  will-change: transform, opacity;
+  animation: ripple-click 600ms ease-out forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple-effect {
+    animation: none;
+  }
+}
+
+/* ---- handwriting-reveal ---- */
+/* Handwriting via SVG stroke drawing.
+   For production any-font handwriting, see tegaki (MIT):
+   https://github.com/gkurt/tegaki */
+.handwriting path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* pathLength="1" on each <path> normalizes the dash math */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: write 1.4s cubic-bezier(0.45, 0, 0.3, 1) forwards;
+}
+
+/* stagger the strokes so they draw in writing order */
+.handwriting path:nth-child(2) { animation-delay: 1s; }
+
+@keyframes write {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .handwriting path { animation: none; stroke-dashoffset: 0; }
+}
+
+/* ============================================================
+   游戏挂载层：把官方动画接到游戏元素上（选择器为游戏侧，动画为官方）
+   ============================================================ */
+
+/* 节点/解谜盒入场：fade-in-up */
+.card-main .card-sec.puzzle-box,
+.node-body > * { animation: fade-in-up 480ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.node-body > *:nth-child(2) { animation-delay: 60ms; }
+.node-body > *:nth-child(3) { animation-delay: 120ms; }
+.node-body > *:nth-child(4) { animation-delay: 180ms; }
+.node-body > *:nth-child(5) { animation-delay: 240ms; }
+.node-body > *:nth-child(n+6) { animation-delay: 300ms; }
+
+/* 按钮 hover：hover-lift（官方 keyframes 作用于 hover 持续态） */
+.btn { transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms ease; }
+.btn:hover { animation: hover-lift 300ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* 解密答错：官方 shake 由引擎加 .anim-shake 触发 */
+.anim-shake { animation: shake 500ms ease-in-out; }
+
+/* 解密成功框：bounce-in */
+.puzzle-box.solved .puzzle-done { animation: bounce-in 600ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+/* 已收集关键词 / 侧栏线索 shimmer（低调扫光） */
+.rv-side .kw { position: relative; overflow: hidden; }
+.rv-side .kw::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,0.14) 50%, transparent 60%);
+  background-size: 200% 100%; opacity: 0;
+}
+.rv-side .kw:hover::after { opacity: 1; animation: shimmer 1.2s linear infinite; }
+
+/* 侧栏入场：官方 fade-in-up */
+.rv-side { animation: fade-in-up 500ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* 链接：官方 underline-draw（用 background 方式） */
+a, .link { text-decoration: none; }
+a, .link { background-image: linear-gradient(currentColor, currentColor); background-size: 0% 1px; background-repeat: no-repeat; background-position: 0 100%; transition: background-size 240ms ease; }
+a:hover, .link:hover { background-size: 100% 1px; }
+
+/* 待机锁定的解密盒：skeleton-pulse 边框弱呼吸 */
+.puzzle-box.locked { animation: skeleton-pulse 1.8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .node-body > *, .btn, .puzzle-box.locked, .puzzle-box.solved .puzzle-done, .rv-side { animation: none !important; }
+  .rv-side .kw:hover::after { animation: none; }
+}
