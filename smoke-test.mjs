@@ -53,7 +53,8 @@ console.log('channel clues:', clues().includes('lls_weige') && clues().includes(
 nav('#/page/n_index'); await wait(20);
 link('打开理事会档案库').click(); await wait(20);
 link('T-001').click(); await wait(20);
-clickKw('抹除的名字'); await wait(20);
+clickKw('抹除的名字'); await wait(20); // 现在直接进入记忆修复室，并自动挂载 n_theresa_black
+console.log('restorer auto-enter:', window.location.hash.includes('n_restorer'), '| black clue:', clues().includes('n_theresa_black'));
 nav('#/page/n_zhuizhi'); await wait(20);
 clickKw('木巳的批注'); clickKw('样本编号'); clickKw('「濯枝」'); await wait(20);
 console.log('zhuizhi clues:', clues().includes('z_note') && clues().includes('z_code'));
