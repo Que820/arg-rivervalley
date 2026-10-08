@@ -286,29 +286,34 @@
     } else if (pz.kind === 'order') {
       const order = pz.data.displayOrder || pz.data.items.map((_, i) => i);
       const items = order.map((src) => ({ t: pz.data.items[src], i: src }));
-      const picked = [];
+      const picked = new Array(items.length).fill(undefined);
       const nSlots = items.length;
       const poolEl = el('div', { class: 'puzzle-order' });
       const slotsEl = el('div', { class: 'puzzle-slots' });
       body.appendChild(slotsEl);
       body.appendChild(poolEl);
-      const seqEl = el('div', { class: 'dim puzzle-hint' }, ['拖动残像到编号槽位（或点击放入空槽）。放满后自动校验。']);
-      body.appendChild(seqEl);
+      body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['拖动残像到编号槽位（或点击放入空槽）。槽内的残像可以拖出或点击取回。放满后自动校验。']));
 
-      const mkDrag = (c) => {
-        let dragging = false, pid = null, sx = 0, sy = 0;
+      const mkFrag = (src, fromSlot) => {
+        const c = el('div', { class: 'puzzle-frag', 'data-src': String(src) }, [items.filter((x) => x.i === src)[0].t]);
+        let dragging = false, pid = null, sx = 0, sy = 0, moved = false;
+        const markOver = (ev, on) => {
+          const t = document.elementFromPoint(ev.clientX, ev.clientY);
+          const sl = t && t.closest ? t.closest('.puzzle-slot') : null;
+          if (sl) sl.classList.toggle('drag-over', on && !sl.classList.contains('filled'));
+          return sl;
+        };
         c.addEventListener('pointerdown', (ev) => {
-          dragging = true; pid = ev.pointerId; sx = ev.clientX; sy = ev.clientY;
+          dragging = true; moved = false; pid = ev.pointerId; sx = ev.clientX; sy = ev.clientY;
           try { c.setPointerCapture(pid); } catch (e) {}
           c.classList.add('dragging'); ev.preventDefault();
         });
         c.addEventListener('pointermove', (ev) => {
           if (!dragging || ev.pointerId !== pid) return;
+          moved = true;
           c.style.transform = 'translate3d(' + (ev.clientX - sx) + 'px,' + (ev.clientY - sy) + 'px,0)';
-          const t = document.elementFromPoint(ev.clientX, ev.clientY);
           slotsEl.querySelectorAll('.puzzle-slot').forEach((sl) => sl.classList.remove('drag-over'));
-          const sl = t && t.closest ? t.closest('.puzzle-slot') : null;
-          if (sl && !sl.firstChild) sl.classList.add('drag-over');
+          markOver(ev, true);
         });
         const finish = (ev) => {
           if (!dragging) return;
@@ -316,23 +321,32 @@
           c.classList.remove('dragging');
           c.style.transform = '';
           slotsEl.querySelectorAll('.puzzle-slot').forEach((sl) => sl.classList.remove('drag-over'));
+          if (!moved) return; // 未拖动 → 交给 click 处理
           const t = document.elementFromPoint(ev.clientX, ev.clientY);
           const sl = t && t.closest ? t.closest('.puzzle-slot') : null;
-          if (sl && !sl.classList.contains('filled')) place(+c.getAttribute('data-src'), +sl.getAttribute('data-slot'));
+          if (sl && !sl.classList.contains('filled')) {
+            if (fromSlot >= 0) picked[fromSlot] = undefined;
+            place(+c.getAttribute('data-src'), +sl.getAttribute('data-slot'));
+          } else if (fromSlot >= 0) {
+            picked[fromSlot] = undefined; // 拖出槽位 → 退回碎片池
+            redraw();
+          }
         };
         c.addEventListener('pointerup', finish);
         c.addEventListener('pointercancel', finish);
         c.addEventListener('click', () => {
-          const k = picked.length;
-          if (k < nSlots) place(+c.dataset.src, k);
+          if (fromSlot >= 0) { picked[fromSlot] = undefined; redraw(); return; } // 点击槽内残像 → 取回
+          const k = picked.indexOf(undefined);
+          if (k >= 0) place(+c.getAttribute('data-src'), k);
         });
+        return c;
       };
 
       const place = (src, slot) => {
         picked[slot] = src;
         if (picked.filter((v) => v !== undefined).length === nSlots) {
           if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
-          else { picked.length = 0; fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); return; }
+          else { picked.fill(undefined); fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); return; }
         }
         redraw();
       };
@@ -343,15 +357,15 @@
           const sl = el('div', { class: 'puzzle-slot', 'data-slot': String(k) }, [String(k + 1) + '.']);
           if (picked[k] !== undefined) {
             sl.classList.add('filled');
-            sl.textContent = String(k + 1) + '. ' + items.filter((x) => x.i === picked[k])[0].t;
+            sl.innerHTML = '';
+            sl.appendChild(el('span', { class: 'puzzle-slot-no' }, [String(k + 1) + '. ']));
+            sl.appendChild(mkFrag(picked[k], k));
           }
           slotsEl.appendChild(sl);
         }
         poolEl.innerHTML = '';
         items.filter((it) => picked.indexOf(it.i) < 0).forEach((it) => {
-          const c = el('div', { class: 'puzzle-frag', 'data-src': String(it.i) }, [it.t]);
-          mkDrag(c);
-          poolEl.appendChild(c);
+          poolEl.appendChild(mkFrag(it.i, -1));
         });
       };
       redraw();
