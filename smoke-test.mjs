@@ -152,7 +152,7 @@ console.log('chips puzzle solved:', !!window.document.querySelector('.puzzle-box
 link('记忆回廊').click(); await wait(20);
 // 病房：记忆碎片排序（按 0,1,2,3,4 顺序点击残像）
 const frags = () => [...window.document.querySelectorAll('.puzzle-frag')];
-const tags = ['床板阴暗的背面','整整三天的声息','蓝绳','冰冷的名词','地衣','关键样本——不可损失'];
+const tags = ['床板背面','三天的死寂','蓝色输液绳','沙子一样流失','地衣','深可见骨'];
 for (let k = 0; k < tags.length; k++) { frags().find(f=>f.textContent.includes(tags[k])).click(); await wait(5); } await wait(20);
 window.document.querySelector('.puzzle-check').click(); await wait(20);
 console.log('memory puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
