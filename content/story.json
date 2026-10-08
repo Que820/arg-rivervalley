@@ -1856,6 +1856,7 @@
     {
       "id": "n_vents",
       "type": "browse",
+      "report": true,
       "title": "7号房 · 通风管暗格",
       "lockRequires": {
         "clues": [
@@ -1877,6 +1878,7 @@
     {
       "id": "n_garden",
       "type": "browse",
+      "report": true,
       "title": "疗养院 · 废弃温室",
       "lockRequires": {
         "clues": [

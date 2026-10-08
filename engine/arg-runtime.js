@@ -242,7 +242,17 @@
   let PUZ_HIDE = [];
   function renderBrowse(node) {
     PUZ_HIDE = (node.puzzle && !S.save.solved[node.puzzle.id]) ? (node.puzzle.hideKws || []) : [];
-    const out = parasWithReports(node.body);
+    const out = [];
+    if (node.report) {
+      const box = el('div', { class: 'invest-report' });
+      box.appendChild(el('div', { class: 'invest-cmd' }, ['【你 → 罗伦萨】去查「' + (node.reportLabel || node.title) + '」。']));
+      box.appendChild(el('div', { class: 'invest-mine' }, [parasWithReports(node.body)]));
+      box.appendChild(el('div', { class: 'invest-head' }, ['【罗伦萨 · 调查回传】' + (node.title || '')]));
+      if (node.clue) box.appendChild(el('div', { class: 'invest-note dim' }, ['（关键词已记录：' + clueLabel(node.clue) + '）']));
+      out.push(box);
+    } else {
+      out.push.apply(out, parasWithReports(node.body));
+    }
     let locked = 0;
     (node.sections || []).forEach((sec) => {
       if (sec.requires && !evalRequires(sec.requires).ok) { locked++; return; }
