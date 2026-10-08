@@ -582,3 +582,5 @@ body, .btn, input, textarea {
 
 .puzzle-clock-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .puzzle-clock-readout { font-size: 14px; letter-spacing: 2px; }
+
+.nav-link { text-decoration: underline; }

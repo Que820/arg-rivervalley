@@ -136,7 +136,12 @@
     const frag = parts.map((p) => {
       const m = p.match(/^\[\[([^|\]]+)\|([^\]]+)\]\]$/);
       if (!m) return p;
-      const id = m[1], label = m[2];
+      let id = m[1], label = m[2];
+      if (id.startsWith('>')) { // 导航式内联链接：[[>节点id|文字]]
+        const nav = el('span', { class: 'kw-inline nav-link' }, [label]);
+        nav.addEventListener('click', () => enter(id.slice(1)));
+        return nav;
+      }
       if ((PUZ_HIDE || []).indexOf(id) >= 0) return null;
       const got = S.save.clues.includes(id);
       const w = el('span', { class: 'kw-inline' + (got ? ' got' : ''), title: got ? '已记录 · 点击重看调查回传' : '点击：指示罗伦萨调查' }, [label]);
