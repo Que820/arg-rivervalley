@@ -1827,7 +1827,13 @@
         ],
         "hideKws": [
           "n_tape_clue"
-        ]
+        ],
+        "requires": {
+          "clues": [
+            "n_threat"
+          ]
+        },
+        "requiresHint": "木巳把频段写进了那条威胁短信——先去通讯记录查它。"
       }
     },
     {
@@ -1954,7 +1960,13 @@
         ],
         "hideKws": [
           "st_chips"
-        ]
+        ],
+        "requires": {
+          "clues": [
+            "z_code"
+          ]
+        },
+        "requiresHint": "启动码来自 Z-007 登记条上的样本编号——先去档案库查濯枝卷宗。"
       }
     },
     {
@@ -2018,7 +2030,13 @@
         "hideKws": [
           "st_lichen",
           "st_carve"
-        ]
+        ],
+        "requires": {
+          "clues": [
+            "st_knot"
+          ]
+        },
+        "requiresHint": "残像与病房区的孩子们有关——先去候车大厅看看蓝绳结扣。"
       }
     },
     {
@@ -2293,7 +2311,16 @@
         },
         "goto": "n_truth",
         "doneLabel": "初审通过",
-        "success": "【初审通过】档案库的权限灯由红转绿。「欢迎来看真相。」"
+        "success": "【初审通过】档案库的权限灯由红转绿。「欢迎来看真相。」",
+        "requires": {
+          "flags": [
+            "f_death"
+          ],
+          "clues": [
+            "n_timer"
+          ]
+        },
+        "requiresHint": "要判断「死亡消息」的真伪，先拼出它的真正发件人，并校准温室的定时器。"
       },
       "links": [
         {

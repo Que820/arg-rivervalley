@@ -246,6 +246,12 @@
 
   function renderPuzzle(node) {
     const pz = node.puzzle;
+    if (pz.requires && !evalRequires(pz.requires).ok) {
+      return el('div', { class: 'card-sec puzzle-box locked' }, [
+        el('div', { class: 'puzzle-title' }, ['【解密】' + pz.title]),
+        el('p', { class: 'dim' }, ['〔装置处于待机，缺少输入依据。' + (pz.requiresHint || '先把相关的线索查清。') + '〕']),
+      ]);
+    }
     if (S.save.solved[pz.id]) {
       const okBox = [el('div', { class: 'puzzle-done' }, ['✔ ' + (pz.doneLabel || '已完成')])];
       (pz.success || '').split(/\n+/).filter(Boolean).forEach((l) => okBox.push(el('p', { class: 'puzzle-success-p' }, [l])));
