@@ -565,3 +565,5 @@ body, .btn, input, textarea {
 .puzzle-digit { overflow: hidden; }
 .puzzle-digit .counter-roll-digit { display: block; height: 1em; line-height: 1; }
 .puzzle-digit .counter-roll-column span { font-weight: bold; }
+
+.puzzle-digit-pair { display: inline-flex; gap: 4px; }

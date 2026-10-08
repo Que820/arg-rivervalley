@@ -435,9 +435,9 @@
         else fail(pz.wrongHint || '定时器没响。时间不对。');
       } }, ['校准']);
       body.appendChild(el('div', { class: 'puzzle-row puzzle-clock' }, [
-        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▲']), h, el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▼'])]),
+        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▲']), el('span', { class: 'puzzle-digit-pair' }, h), el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▼'])]),
         el('span', { class: 'puzzle-colon' }, [':']),
-        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▲']), mnt, el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▼'])]),
+        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▲']), el('span', { class: 'puzzle-digit-pair' }, mnt), el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▼'])]),
         btn,
       ]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
