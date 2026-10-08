@@ -398,6 +398,11 @@
         const mk = (dir) => () => {
           vals[k] = (vals[k] + dir + 10) % 10;
           rollDigit(d, vals[k], 0);
+          if (n >= 3) { // 相邻两位反向联动（咬合）
+            const l = (k + n - 1) % n, r = (k + 1) % n;
+            vals[l] = (vals[l] - dir + 10) % 10; rollDigit(digits[l], vals[l], 60);
+            vals[r] = (vals[r] - dir + 10) % 10; rollDigit(digits[r], vals[r], 120);
+          }
         };
         row.appendChild(el('div', { class: 'puzzle-dial' }, [
           el('button', { class: 'btn dial-btn', onclick: mk(1) }, ['▲']),

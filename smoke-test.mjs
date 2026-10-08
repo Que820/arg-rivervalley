@@ -146,7 +146,7 @@ clickKw('售票窗口'); clickKw('绳结扣'); await wait(20);
 // 芯片阵列：转盘 0415
 const dials = () => [...window.document.querySelectorAll('.puzzle-dials .puzzle-dial')];
 const upN = (dialIdx, times) => { for (let t = 0; t < times; t++) dials()[dialIdx].querySelector('.dial-btn').click(); };
-upN(0, 5); upN(1, 1); upN(2, 4); upN(3, 0); await wait(20);
+upN(0, 2); upN(1, 4); upN(2, 1); upN(3, 3); await wait(20); // 联动解: 5140
 [...window.document.querySelectorAll('.puzzle-box .btn')].pop().click(); await wait(20);
 console.log('chips puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 link('记忆回廊').click(); await wait(20);
