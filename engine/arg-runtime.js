@@ -245,10 +245,19 @@
     const MARK = '【工作台批注 / 你的分析笔记】';
     let mainBody = node.body;
     let noteBody = null;
+    let sysTail = null;
     if (typeof node.body === 'string' && node.body.indexOf(MARK) >= 0) {
       const bi = node.body.indexOf(MARK);
       mainBody = node.body.slice(0, bi).trim();
       noteBody = node.body.slice(bi + MARK.length).trim();
+    }
+    // 末尾 [SYS_NOTE] 摘出来，放到解密之后
+    if (typeof mainBody === 'string') {
+      const si = mainBody.lastIndexOf('[SYS_NOTE');
+      if (si >= 0) {
+        sysTail = mainBody.slice(si).trim();
+        mainBody = mainBody.slice(0, si).trim();
+      }
     }
     if (node.report) {
       const box = el('div', { class: 'invest-report' });
@@ -266,7 +275,8 @@
       nb.appendChild(el('div', { class: 'invest-mine' }, [parasWithReports(noteBody)]));
       out.push(nb);
     }
-    if (node.puzzle) out.push(renderPuzzle(node)); // 解密置于文本之前
+    if (node.puzzle) out.push(renderPuzzle(node)); // 解密置于文本之后、SYS_NOTE 之前
+    if (sysTail) out.push(el('div', { class: 'card-sec dim' }, parasWithReports(sysTail)));
     let locked = 0;
     (node.sections || []).forEach((sec) => {
       if (sec.requires && !evalRequires(sec.requires).ok) { locked++; return; }
