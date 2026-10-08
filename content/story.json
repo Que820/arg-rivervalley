@@ -1085,10 +1085,6 @@
           "to": "n_zhuizhi"
         },
         {
-          "label": "记忆修复室 · 涂黑还原（需先取得被涂黑的代号）",
-          "to": "n_restorer"
-        },
-        {
           "label": "« 断开连接",
           "to": "n_desktop"
         }
