@@ -76,6 +76,18 @@
   window.addEventListener('hashchange', render);
 
   // ---------- 工具 ----------
+  // 官方 counter-roll：数字滚动（StyleKit 代码驱动）
+  function rollDigit(d, v, delay) {
+    d.innerHTML = '';
+    const inner = el('span', { class: 'counter-roll-digit' });
+    inner.style.setProperty('--counter-target', String(v));
+    inner.style.animationDelay = (delay || 0) + 'ms';
+    const col = el('span', { class: 'counter-roll-column' });
+    for (let i = 0; i <= 9; i++) col.appendChild(el('span', null, [String(i)]));
+    inner.appendChild(col);
+    d.appendChild(inner);
+  }
+
   function el(tag, attrs, children) {
     const e = document.createElement(tag);
     if (attrs) Object.keys(attrs).forEach((k) => {
@@ -380,11 +392,12 @@
       const row = el('div', { class: 'puzzle-dials' });
       const digits = [];
       for (let k = 0; k < n; k++) {
-        const d = el('span', { class: 'puzzle-digit' }, ['0']);
+        const d = el('span', { class: 'puzzle-digit' }, []);
         digits.push(d);
+        rollDigit(d, 0, k * 150);
         const mk = (dir) => () => {
           vals[k] = (vals[k] + dir + 10) % 10;
-          d.textContent = String(vals[k]);
+          rollDigit(d, vals[k], 0);
         };
         row.appendChild(el('div', { class: 'puzzle-dial' }, [
           el('button', { class: 'btn dial-btn', onclick: mk(1) }, ['▲']),
@@ -399,11 +412,19 @@
       body.appendChild(el('div', { class: 'puzzle-row' }, [row, btn]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'clock') {
-      const h = el('span', { class: 'puzzle-digit' }, ['00']);
-      const mnt = el('span', { class: 'puzzle-digit' }, ['00']);
+      const hT = el('span', { class: 'puzzle-digit' }, []), hO = el('span', { class: 'puzzle-digit' }, []);
+      const mT = el('span', { class: 'puzzle-digit' }, []), mO = el('span', { class: 'puzzle-digit' }, []);
+      const h = [hT, hO], mnt = [mT, mO];
       let hv = 0, mv = 0;
-      const up = () => { h.textContent = String(hv).padStart(2, '0'); mnt.textContent = String(mv).padStart(2, '0'); };
+      const up = () => {
+        const st = String(hv).padStart(2, '0'), sm = String(mv).padStart(2, '0');
+        if (hT.dataset.v !== st[0]) { hT.dataset.v = st[0]; rollDigit(hT, +st[0], 0); }
+        if (hO.dataset.v !== st[1]) { hO.dataset.v = st[1]; rollDigit(hO, +st[1], 60); }
+        if (mT.dataset.v !== sm[0]) { mT.dataset.v = sm[0]; rollDigit(mT, +sm[0], 120); }
+        if (mO.dataset.v !== sm[1]) { mO.dataset.v = sm[1]; rollDigit(mO, +sm[1], 180); }
+      };
       const mkStep = (dv, getv, setv) => () => { setv(getv() + dv); up(); };
+      up();
       const btn = el('button', { class: 'btn', onclick: () => {
         if (hv === pz.targetHour && mv === pz.targetMin) solve();
         else fail(pz.wrongHint || '定时器没响。时间不对。');

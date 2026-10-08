@@ -560,3 +560,8 @@ body, .btn, input, textarea {
 .puzzle-frag.dragging { position: relative; z-index: 10; opacity: .88; box-shadow: 0 4px 14px rgba(0,0,0,.3); }
 
 .puzzle-check[disabled] { opacity: .45; cursor: not-allowed; }
+
+/* counter-roll 官方数字滚动接入（转盘/时钟） */
+.puzzle-digit { overflow: hidden; }
+.puzzle-digit .counter-roll-digit { display: block; height: 1em; line-height: 1; }
+.puzzle-digit .counter-roll-column span { font-weight: bold; }
