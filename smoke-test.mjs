@@ -124,19 +124,36 @@ nav('#/page/n_restorer'); await wait(20);
 console.log('restorer reveals Jiu Ju:', has('「几居」'));
 nav('#/page/n_vents'); await wait(20);
 clickKw('数据卷轴'); await wait(20);
+// 温室：定时器校准玩法（拨到 05:00）
 nav('#/page/n_garden'); await wait(20);
-clickKw('一台民用定时器'); await wait(20);
+const clockBtns = () => [...window.document.querySelectorAll('.puzzle-clock .dial-btn')];
+for (let i = 0; i < 5; i++) clockBtns()[0].click(); await wait(20); // 小时 0 -> 5
+[...window.document.querySelectorAll('.puzzle-box .btn')].pop().click(); await wait(20);
+console.log('timer puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
+// 磁带：频率调谐玩法（17.4 MHz = 174 档）
 nav('#/page/n_tape'); await wait(20);
-clickKw('盒式磁带'); await wait(20);
+const rng = window.document.querySelector('.puzzle-range');
+rng.value = 174; rng.dispatchEvent(new window.Event('input')); await wait(20);
+[...window.document.querySelectorAll('.puzzle-box .btn')].pop().click(); await wait(20);
+console.log('tape puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 nav('#/page/n_desktop'); await wait(20);
 await tryCombo('录音带', '登记条上的样本名');
 window.document.querySelector('.combo-btn').click(); await wait(20);
 
 // 雨幕车站大环节：候车大厅 → 病房 → 洗涤间/图书馆 → 站台 + 尾鸲频道 + 孩子们的旧约
 nav('#/page/n_station'); await wait(20);
-clickKw('售票窗口'); clickKw('绳结扣'); clickKw('0415'); await wait(20);
+clickKw('售票窗口'); clickKw('绳结扣'); await wait(20);
+// 芯片阵列：转盘 0415
+const dials = () => [...window.document.querySelectorAll('.puzzle-dials .puzzle-dial')];
+const upN = (dialIdx, times) => { for (let t = 0; t < times; t++) dials()[dialIdx].querySelector('.dial-btn').click(); };
+upN(0, 0); upN(1, 4); upN(2, 1); upN(3, 5); await wait(20);
+[...window.document.querySelectorAll('.puzzle-box .btn')].pop().click(); await wait(20);
+console.log('chips puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 link('记忆回廊').click(); await wait(20);
-clickKw('地衣'); clickKw('刻痕'); await wait(20);
+// 病房：记忆碎片排序（按 0,1,2,3,4 顺序点击残像）
+const frags = () => [...window.document.querySelectorAll('.puzzle-frag')];
+for (let k = 0; k < 5; k++) { frags()[0].click(); await wait(5); } await wait(20);
+console.log('memory puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 link('洗涤间').click(); await wait(20);
 clickKw('「别信白大衣说的话。」'); await wait(20);
 nav('#/page/n_vault'); await wait(20);

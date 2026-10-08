@@ -6,7 +6,7 @@
   'use strict';
 
   // ---------- 存档 ----------
-  const DEFAULT_SAVE = { clues: [], revealed: [], flags: {}, verdict: null, combos: [], idleCount: 0, visited: [] };
+  const DEFAULT_SAVE = { clues: [], revealed: [], flags: {}, verdict: null, combos: [], idleCount: 0, visited: [], solved: {} };
 
   function loadSave(key) {
     try {
@@ -125,6 +125,7 @@
       const m = p.match(/^\[\[([^|\]]+)\|([^\]]+)\]\]$/);
       if (!m) return p;
       const id = m[1], label = m[2];
+      if ((PUZ_HIDE || []).indexOf(id) >= 0) return null;
       const got = S.save.clues.includes(id);
       const w = el('span', { class: 'kw-inline' + (got ? ' got' : ''), title: got ? '已记录 · 点击重看调查回传' : '点击：指示罗伦萨调查' }, [label]);
       w.addEventListener('click', () => {
@@ -226,8 +227,11 @@
     const aside = document.querySelector('aside.rv-side');
     if (aside && aside.parentNode) aside.parentNode.replaceChild(sidePanel(), aside);
   }
+  let PUZ_HIDE = [];
   function renderBrowse(node) {
+    PUZ_HIDE = (node.puzzle && !S.save.solved[node.puzzle.id]) ? (node.puzzle.hideKws || []) : [];
     const out = parasWithReports(node.body);
+    if (node.puzzle) out.push(renderPuzzle(node));
     let locked = 0;
     (node.sections || []).forEach((sec) => {
       if (sec.requires && !evalRequires(sec.requires).ok) { locked++; return; }
@@ -238,6 +242,110 @@
     }
     out.push(nodeLinks(node));
     return out;
+  }
+
+  function renderPuzzle(node) {
+    const pz = node.puzzle;
+    if (S.save.solved[pz.id]) {
+      const okBox = [el('div', { class: 'puzzle-done' }, ['✔ ' + (pz.doneLabel || '已完成')])];
+      (pz.success || '').split(/\n+/).filter(Boolean).forEach((l) => okBox.push(el('p', { class: 'puzzle-success-p' }, [l])));
+      return el('div', { class: 'card-sec puzzle-box solved' }, okBox);
+    }
+    const wrap = [el('div', { class: 'puzzle-title' }, ['【解密】' + pz.title])];
+    (pz.intro || '').split(/\n+/).filter(Boolean).forEach((l) => wrap.push(el('p', { class: 'puzzle-intro' }, [l])));
+    const body = el('div', { class: 'puzzle-body' });
+    const err = el('div', { class: 'puzzle-err dim' });
+    wrap.push(body, err);
+    const solve = () => {
+      S.save.solved[pz.id] = true;
+      (pz.reward || []).forEach((c) => collectClue(c));
+      persist(); refreshSide(); render();
+    };
+    if (pz.kind === 'tune') {
+      const val = el('span', { class: 'puzzle-readout' }, [(pz.min / (pz.scale || 1)).toFixed(1) + ' ' + (pz.unit || '')]);
+      const rng = el('input', { type: 'range', min: pz.min, max: pz.max, step: 1, value: pz.min, class: 'puzzle-range' });
+      const fmt = (v) => (v / (pz.scale || 1)).toFixed(1);
+      rng.addEventListener('input', () => { val.textContent = fmt(+rng.value) + ' ' + (pz.unit || ''); });
+      const btn = el('button', { class: 'btn', onclick: () => {
+        if (Math.abs(+rng.value - pz.target) <= (pz.tolerance || 0)) solve();
+        else err.textContent = pz.wrongHint || '只有沙沙声。再调。';
+      } }, ['接收']);
+      body.appendChild(el('div', { class: 'puzzle-row' }, [rng, val, btn]));
+      if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
+    } else if (pz.kind === 'order') {
+      const items = pz.data.items.map((t, i) => ({ t, i }));
+      const picked = [];
+      const listEl = el('div', { class: 'puzzle-order' });
+      const redraw = () => {
+        listEl.innerHTML = '';
+        items.filter((it) => picked.indexOf(it.i) < 0).forEach((it) => {
+          const c = el('div', { class: 'puzzle-frag' }, [it.t]);
+          c.addEventListener('click', () => {
+            picked.push(it.i);
+            if (picked.length === items.length) {
+              if (picked.join(',') === items.map((x) => x.i).join(',')) solve();
+              else { picked.length = 0; err.textContent = pz.wrongHint || '顺序不对。残像散开了，重来。'; redraw(); }
+            } else redraw();
+          });
+          listEl.appendChild(c);
+        });
+      };
+      redraw();
+      body.appendChild(listEl);
+      const seqEl = el('div', { class: 'dim puzzle-hint' });
+      body.appendChild(seqEl);
+    } else if (pz.kind === 'dials') {
+      const n = pz.target.length;
+      const vals = new Array(n).fill(0);
+      const row = el('div', { class: 'puzzle-dials' });
+      const digits = [];
+      for (let k = 0; k < n; k++) {
+        const d = el('span', { class: 'puzzle-digit' }, ['0']);
+        digits.push(d);
+        const mk = (dir) => () => {
+          vals[k] = (vals[k] + dir + 10) % 10;
+          d.textContent = String(vals[k]);
+        };
+        row.appendChild(el('div', { class: 'puzzle-dial' }, [
+          el('button', { class: 'btn dial-btn', onclick: mk(1) }, ['▲']),
+          d,
+          el('button', { class: 'btn dial-btn', onclick: mk(-1) }, ['▼']),
+        ]));
+      }
+      const btn = el('button', { class: 'btn', onclick: () => {
+        if (vals.join('') === pz.target) solve();
+        else err.textContent = pz.wrongHint || '芯片没有反应。';
+      } }, ['启动']);
+      body.appendChild(el('div', { class: 'puzzle-row' }, [row, btn]));
+      if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
+    } else if (pz.kind === 'clock') {
+      const h = el('span', { class: 'puzzle-digit' }, ['00']);
+      const mnt = el('span', { class: 'puzzle-digit' }, ['00']);
+      let hv = 0, mv = 0;
+      const up = () => { h.textContent = String(hv).padStart(2, '0'); mnt.textContent = String(mv).padStart(2, '0'); };
+      const mkStep = (dv, getv, setv) => () => { setv(getv() + dv); up(); };
+      const btn = el('button', { class: 'btn', onclick: () => {
+        if (hv === pz.targetHour && mv === pz.targetMin) solve();
+        else err.textContent = pz.wrongHint || '定时器没响。时间不对。';
+      } }, ['校准']);
+      body.appendChild(el('div', { class: 'puzzle-row puzzle-clock' }, [
+        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▲']), h, el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▼'])]),
+        el('span', { class: 'puzzle-colon' }, [':']),
+        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▲']), mnt, el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▼'])]),
+        btn,
+      ]));
+      if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
+    } else if (pz.kind === 'quiz') {
+      (pz.data.options || []).forEach((op) => {
+        const b = el('button', { class: 'btn quiz-opt', onclick: () => {
+          if (op.ok) { solve(); if (pz.goto) enter(pz.goto); }
+          else err.textContent = op.hint || '这份陈述站不住脚。再想想。';
+        } }, [op.text]);
+        body.appendChild(b);
+      });
+      if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
+    }
+    return el('div', { class: 'card-sec puzzle-box' }, wrap);
   }
 
   function renderFiles(node) {
