@@ -194,13 +194,6 @@
       suspectList,
       extra || null,
       el('div', { class: 'side-back' }, [el('a', { href: '#/page/' + S.story.meta.start }, ['« 返回工作台'])]),
-      el('div', { class: 'side-theme' }, [el('a', { href: 'javascript:void(0)', onclick: () => {
-        const root = document.documentElement;
-        const mode = root.dataset.mode === 'dark' ? '' : 'dark';
-        root.dataset.mode = mode;
-        try { localStorage.setItem('arg-theme-mode', mode); } catch (e) {}
-        this.textContent = mode === 'dark' ? '◐ 切换亮色终端' : '◐ 切换暗色终端';
-      } }, [document.documentElement.dataset.mode === 'dark' ? '◐ 切换亮色终端' : '◐ 切换暗色终端'])]),
       el('div', { class: 'side-tools' }, [el('a', { href: 'save.html', target: '_blank' }, ['💾 存档导出 / 导入'])]),
       el('div', { class: 'side-tools' }, [el('a', { href: 'unlock.html', target: '_blank' }, ['🔓 全解锁存档'])]),
       el('div', { class: 'side-reset' }, [el('a', { href: 'javascript:void(0)', onclick: () => {
