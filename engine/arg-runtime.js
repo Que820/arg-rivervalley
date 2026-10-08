@@ -241,15 +241,30 @@
   function renderBrowse(node) {
     PUZ_HIDE = (node.puzzle && !S.save.solved[node.puzzle.id]) ? (node.puzzle.hideKws || []) : [];
     const out = [];
+    // 【工作台批注 / 你的分析笔记】→ 调查回传同款面板
+    const MARK = '【工作台批注 / 你的分析笔记】';
+    let mainBody = node.body;
+    let noteBody = null;
+    if (typeof node.body === 'string' && node.body.indexOf(MARK) >= 0) {
+      const bi = node.body.indexOf(MARK);
+      mainBody = node.body.slice(0, bi).trim();
+      noteBody = node.body.slice(bi + MARK.length).trim();
+    }
     if (node.report) {
       const box = el('div', { class: 'invest-report' });
       box.appendChild(el('div', { class: 'invest-cmd' }, ['【你 → 罗伦萨】去查「' + (node.reportLabel || node.title) + '」。']));
-      box.appendChild(el('div', { class: 'invest-mine' }, [parasWithReports(node.body)]));
+      box.appendChild(el('div', { class: 'invest-mine' }, [parasWithReports(mainBody)]));
       box.appendChild(el('div', { class: 'invest-head' }, ['【罗伦萨 · 调查回传】' + (node.title || '')]));
       if (node.clue) box.appendChild(el('div', { class: 'invest-note dim' }, ['（关键词已记录：' + clueLabel(node.clue) + '）']));
       out.push(box);
     } else {
-      out.push.apply(out, parasWithReports(node.body));
+      out.push.apply(out, parasWithReports(mainBody));
+    }
+    if (noteBody) {
+      const nb = el('div', { class: 'invest-report' });
+      nb.appendChild(el('div', { class: 'invest-cmd' }, [MARK]));
+      nb.appendChild(el('div', { class: 'invest-mine' }, [parasWithReports(noteBody)]));
+      out.push(nb);
     }
     let locked = 0;
     (node.sections || []).forEach((sec) => {
