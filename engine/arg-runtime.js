@@ -292,7 +292,7 @@
       const slotsEl = el('div', { class: 'puzzle-slots' });
       body.appendChild(slotsEl);
       body.appendChild(poolEl);
-      body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['拖动残像到编号槽位（或点击放入空槽）。槽内的残像可以拖出或点击取回。放满后自动校验。']));
+      body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['拖动残像至编号槽位。错误的回忆将导致意识坍塌。']));
 
       const mkFrag = (src, fromSlot) => {
         const c = el('div', { class: 'puzzle-frag', 'data-src': String(src) }, [items.filter((x) => x.i === src)[0].t]);
@@ -346,7 +346,7 @@
       checkBtn.addEventListener('click', () => {
         if (picked.filter((v) => v !== undefined).length < nSlots) return;
         if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
-        else { picked.fill(undefined); fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); }
+        else { picked.fill(undefined); fail(pz.wrongHint || '残像散开了。时间轴逻辑断裂。重来。'); redraw(); }
       });
       body.appendChild(checkBtn);
 
