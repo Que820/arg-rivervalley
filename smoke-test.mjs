@@ -165,7 +165,7 @@ clickKw('没有瞳孔'); await wait(20);
 nav('#/page/n_platform'); await wait(20);
 clickKw('车票'); clickKw('金属片'); await wait(20);
 // 拓印台：先错序后正确（横竖撇捺）
-{const sts=()=>[...window.document.querySelectorAll('.puzzle-st')];const byL=(l)=>sts().find(b=>b.textContent===l);byL('撇').click();await wait(10);console.log('trace wrong rejected:', !window.document.querySelector('.puzzle-box.solved'));const good=['横','竖','撇','捺'];for(const l of good){byL(l).click();await wait(5);}} await wait(20);
+{const sts=()=>[...window.document.querySelectorAll('.puzzle-st')];const byS=(s)=>sts().find(b=>b.getAttribute('data-stroke')===s);byS('zh').click();await wait(10);console.log('trace decoy rejected:', !window.document.querySelector('.puzzle-box.solved'));byS('pie').click();await wait(10);console.log('trace wrong-order rejected:', !window.document.querySelector('.puzzle-box.solved'));for(const s of ['heng','shu','pie','na']){byS(s).click();await wait(5);}} await wait(20);
 console.log('trace puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'), '| f_early_rain:', flags().f_early_rain === true);
 nav('#/page/n_contacts'); await wait(20);
 contact('尾鸲').click(); await wait(20);

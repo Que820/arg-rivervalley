@@ -486,6 +486,7 @@
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'trace') {
       const strokes = pz.data.strokes || [];
+      const validN = strokes.filter((s) => s.order).length;
       let prog = 0;
       const plate = el('div', { class: 'puzzle-plate' });
       strokes.forEach((st) => plate.appendChild(el('div', { class: 'puzzle-etch et-' + st.id })));
@@ -493,15 +494,18 @@
       const tiles = [];
       (pz.data.displayOrder || strokes.map((_, i) => i)).forEach((src) => {
         const st = strokes[src];
-        const t = el('button', { class: 'puzzle-st' }, [st.label]);
+        const t = el('button', { class: 'puzzle-st' });
+        t.setAttribute('data-stroke', st.id);
+        t.appendChild(el('i', { class: 'puzzle-st-glyph g-' + st.id }));
+        if (st.label) t.appendChild(el('span', { class: 'puzzle-st-label' }, [st.label]));
         t.addEventListener('click', () => {
           if (t.disabled) return;
-          if (st.order === prog + 1) {
+          if (st.order && st.order === prog + 1) {
             t.disabled = true; t.classList.add('used');
             plate.querySelector('.et-' + st.id).classList.add('hit');
             prog++;
             err.textContent = '';
-            if (prog === strokes.length) solve();
+            if (prog === validN) solve();
           } else {
             prog = 0;
             tiles.forEach((x) => { x.disabled = false; x.classList.remove('used'); });
