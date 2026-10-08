@@ -152,7 +152,8 @@ console.log('chips puzzle solved:', !!window.document.querySelector('.puzzle-box
 link('记忆回廊').click(); await wait(20);
 // 病房：记忆碎片排序（按 0,1,2,3,4 顺序点击残像）
 const frags = () => [...window.document.querySelectorAll('.puzzle-frag')];
-for (let k = 0; k < 5; k++) { frags()[0].click(); await wait(5); } await wait(20);
+const tags = ['残像一','残像二','残像三','残像四','残像五'];
+for (let k = 0; k < 5; k++) { frags().find(f=>f.textContent.includes(tags[k])).click(); await wait(5); } await wait(20);
 console.log('memory puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 link('洗涤间').click(); await wait(20);
 clickKw('「别信白大衣说的话。」'); await wait(20);

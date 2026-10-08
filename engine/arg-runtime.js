@@ -273,7 +273,8 @@
       body.appendChild(el('div', { class: 'puzzle-row' }, [rng, val, btn]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'order') {
-      const items = pz.data.items.map((t, i) => ({ t, i }));
+      const order = pz.data.displayOrder || pz.data.items.map((_, i) => i);
+      const items = order.map((src, disp) => ({ t: pz.data.items[src], i: src, disp }));
       const picked = [];
       const listEl = el('div', { class: 'puzzle-order' });
       const redraw = () => {
@@ -283,7 +284,7 @@
           c.addEventListener('click', () => {
             picked.push(it.i);
             if (picked.length === items.length) {
-              if (picked.join(',') === items.map((x) => x.i).join(',')) solve();
+              if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
               else { picked.length = 0; err.textContent = pz.wrongHint || '顺序不对。残像散开了，重来。'; redraw(); }
             } else redraw();
           });
