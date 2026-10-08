@@ -133,7 +133,7 @@ console.log('timer puzzle solved:', !!window.document.querySelector('.puzzle-box
 // 磁带：频率调谐玩法（17.4 MHz = 174 档）
 nav('#/page/n_tape'); await wait(20);
 const rng = window.document.querySelector('.puzzle-range');
-rng.value = 174; rng.dispatchEvent(new window.Event('input')); await wait(20);
+rng.value = 136; rng.dispatchEvent(new window.Event('input')); await wait(20);
 [...window.document.querySelectorAll('.puzzle-box .btn')].pop().click(); await wait(20);
 console.log('tape puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 nav('#/page/n_desktop'); await wait(20);
@@ -146,14 +146,14 @@ clickKw('售票窗口'); clickKw('绳结扣'); await wait(20);
 // 芯片阵列：转盘 0415
 const dials = () => [...window.document.querySelectorAll('.puzzle-dials .puzzle-dial')];
 const upN = (dialIdx, times) => { for (let t = 0; t < times; t++) dials()[dialIdx].querySelector('.dial-btn').click(); };
-upN(0, 0); upN(1, 4); upN(2, 1); upN(3, 5); await wait(20);
+upN(0, 5); upN(1, 1); upN(2, 4); upN(3, 0); await wait(20);
 [...window.document.querySelectorAll('.puzzle-box .btn')].pop().click(); await wait(20);
 console.log('chips puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 link('记忆回廊').click(); await wait(20);
 // 病房：记忆碎片排序（按 0,1,2,3,4 顺序点击残像）
 const frags = () => [...window.document.querySelectorAll('.puzzle-frag')];
-const tags = ['残像一','残像二','残像三','残像四','残像五'];
-for (let k = 0; k < 5; k++) { frags().find(f=>f.textContent.includes(tags[k])).click(); await wait(5); } await wait(20);
+const tags = ['把一个名字写在床板背面','三天没有开口说话','教他们在窗台用蓝绳打结','把『爸爸』说成了『编号』','它比我们诚实','关键样本——不可损失'];
+for (let k = 0; k < tags.length; k++) { frags().find(f=>f.textContent.includes(tags[k])).click(); await wait(5); } await wait(20);
 console.log('memory puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 link('洗涤间').click(); await wait(20);
 clickKw('「别信白大衣说的话。」'); await wait(20);
