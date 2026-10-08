@@ -315,6 +315,7 @@
     const solve = () => {
       S.save.solved[pz.id] = true;
       (pz.reward || []).forEach((c) => collectClue(c));
+      if (pz.flag) S.save.flags[pz.flag] = true;
       persist(); refreshSide(); render();
     };
     if (pz.kind === 'tune') {
@@ -482,6 +483,35 @@
         else fail(pz.wrongHint || '定时器没响。时间不对。');
       } }, ['校准']);
       body.appendChild(el('div', { class: 'puzzle-row' }, [wrapCol, btn]));
+      if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
+    } else if (pz.kind === 'trace') {
+      const strokes = pz.data.strokes || [];
+      let prog = 0;
+      const plate = el('div', { class: 'puzzle-plate' });
+      strokes.forEach((st) => plate.appendChild(el('div', { class: 'puzzle-etch et-' + st.id })));
+      const tilesRow = el('div', { class: 'puzzle-sts' });
+      const tiles = [];
+      (pz.data.displayOrder || strokes.map((_, i) => i)).forEach((src) => {
+        const st = strokes[src];
+        const t = el('button', { class: 'puzzle-st' }, [st.label]);
+        t.addEventListener('click', () => {
+          if (t.disabled) return;
+          if (st.order === prog + 1) {
+            t.disabled = true; t.classList.add('used');
+            plate.querySelector('.et-' + st.id).classList.add('hit');
+            prog++;
+            err.textContent = '';
+            if (prog === strokes.length) solve();
+          } else {
+            prog = 0;
+            tiles.forEach((x) => { x.disabled = false; x.classList.remove('used'); });
+            plate.querySelectorAll('.puzzle-etch.hit').forEach((x) => x.classList.remove('hit'));
+            fail(pz.wrongHint || '刻刀打滑了。笔顺不对。重来。');
+          }
+        });
+        tiles.push(t); tilesRow.appendChild(t);
+      });
+      body.appendChild(el('div', { class: 'puzzle-row puzzle-trace' }, [plate, tilesRow]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'quiz') {
       (pz.data.options || []).forEach((op) => {

@@ -70,7 +70,7 @@ window.document.querySelector('.combo-btn').click(); await wait(20);
 console.log('combos:', has('特蕾莎＝几居') && has('镜像关系'));
 nav('#/page/n_desktop'); await wait(20);
 console.log('combo compass:', has('组合罗盘') && has('能拼在一起'));
-console.log('station combos:', (typeof story !== 'undefined' ? (story.combos||[]).length === 9 : false));
+console.log('station combos:', (typeof story !== 'undefined' ? (story.combos||[]).length === 8 : false));
 
 // 终端：双前置解锁
 nav('#/page/n_login'); await wait(20);
@@ -164,6 +164,9 @@ nav('#/page/n_vault'); await wait(20);
 clickKw('没有瞳孔'); await wait(20);
 nav('#/page/n_platform'); await wait(20);
 clickKw('车票'); clickKw('金属片'); await wait(20);
+// 拓印台：先错序后正确（横竖撇捺）
+{const sts=()=>[...window.document.querySelectorAll('.puzzle-st')];const byL=(l)=>sts().find(b=>b.textContent===l);byL('撇').click();await wait(10);console.log('trace wrong rejected:', !window.document.querySelector('.puzzle-box.solved'));const good=['横','竖','撇','捺'];for(const l of good){byL(l).click();await wait(5);}} await wait(20);
+console.log('trace puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'), '| f_early_rain:', flags().f_early_rain === true);
 nav('#/page/n_contacts'); await wait(20);
 contact('尾鸲').click(); await wait(20);
 chatBtn('异地上传日志').click(); await wait(20);

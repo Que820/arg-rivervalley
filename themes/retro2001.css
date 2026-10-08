@@ -584,3 +584,35 @@ body, .btn, input, textarea {
 .puzzle-clock-readout { font-size: 14px; letter-spacing: 2px; }
 
 .nav-link { text-decoration: underline; }
+
+/* ---- 拓印台（trace 笔顺复原） ---- */
+.puzzle-trace { align-items: center; }
+.puzzle-plate {
+  position: relative; width: 140px; height: 140px; flex: none;
+  border: 2px solid #777; background: linear-gradient(160deg, #5a5f58, #3d423c);
+  box-shadow: inset 0 0 12px rgba(0,0,0,.55), 0 2px 4px rgba(0,0,0,.3);
+}
+.puzzle-etch { position: absolute; background: rgba(190, 215, 190, .18); border: 1px dashed rgba(190,215,190,.35); opacity: 0; transition: opacity .2s; }
+.puzzle-etch { opacity: 0; }
+/* 残影提示层用 outline 显示位置：ghost 由父级未完成时半透明可见 */
+.puzzle-plate::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(transparent 0, transparent calc(24% - 1px), rgba(200,225,205,.14) 24%, rgba(200,225,205,.14) calc(24% + 5px), transparent calc(24% + 6px), transparent 100%),
+    linear-gradient(90deg, transparent calc(47% - 3px), rgba(200,225,205,.14) calc(47% - 3px), rgba(200,225,205,.14) calc(47% + 3px), transparent calc(47% + 4px)),
+    linear-gradient(30deg, transparent calc(30% - 3px), rgba(200,225,205,.12) calc(30% - 3px), rgba(200,225,205,.12) calc(30% + 3px), transparent calc(30% + 4px)),
+    linear-gradient(-30deg, transparent calc(30% - 3px), rgba(200,225,205,.12) calc(30% - 3px), rgba(200,225,205,.12) calc(30% + 3px), transparent calc(30% + 4px));
+}
+.puzzle-etch.hit { background: #d8f0d8; border-color: #d8f0d8; box-shadow: 0 0 8px rgba(216,240,216,.8); }
+.puzzle-etch.hit.et-heng { opacity: 1; top: 33px; left: 20px; width: 100px; height: 7px; border: 0; }
+.puzzle-etch.hit.et-shu { opacity: 1; top: 12px; left: 66px; width: 7px; height: 106px; border: 0; }
+.puzzle-etch.hit.et-pie { opacity: 1; top: 56px; left: 36px; width: 7px; height: 62px; border: 0; transform: rotate(30deg); }
+.puzzle-etch.hit.et-na { opacity: 1; top: 56px; left: 96px; width: 7px; height: 62px; border: 0; transform: rotate(-30deg); }
+.puzzle-sts { display: flex; flex-direction: column; gap: 6px; }
+.puzzle-st {
+  min-width: 64px; padding: 6px 10px; border: 1px solid #999; background: #f4f4f4;
+  cursor: pointer; font-size: 14px;
+}
+.puzzle-st:hover { background: #ffffe0; }
+.puzzle-st.used { opacity: .35; cursor: default; text-decoration: line-through; }
+.puzzle-st.used:hover { background: #f4f4f4; }
