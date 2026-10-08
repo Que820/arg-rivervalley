@@ -445,3 +445,8 @@ html[data-mode="dark"] .puzzle-slot.drag-over { border-color: #8f8; background: 
 html[data-mode="dark"] .puzzle-frag.dragging { box-shadow: 0 4px 14px rgba(0,0,0,.6); }
 
 html[data-mode="dark"] .puzzle-digit .counter-roll-column span { color: #c8ffc8; }
+
+html[data-mode="dark"] .puzzle-clockface { border-color: #4a6a4a; background: rgba(0,30,0,.6); }
+html[data-mode="dark"] .puzzle-hand { background: #c8ffc8; }
+html[data-mode="dark"] .puzzle-hand.min { background: #7a9a7a; }
+html[data-mode="dark"] .puzzle-hand-pin { background: #c8ffc8; }

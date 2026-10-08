@@ -127,7 +127,8 @@ clickKw('数据卷轴'); await wait(20);
 // 温室：定时器校准玩法（拨到 05:00）
 nav('#/page/n_garden'); await wait(20);
 const clockBtns = () => [...window.document.querySelectorAll('.puzzle-clock .dial-btn')];
-for (let i = 0; i < 5; i++) clockBtns()[0].click(); await wait(20); // 小时 0 -> 5
+for (let i = 0; i < 4; i++) clockBtns()[0].click(); await wait(20); // 时 0 -> 4
+for (let i = 0; i < 47; i++) clockBtns()[2].click(); await wait(20); // 分 0 -> 47
 [...window.document.querySelectorAll('.puzzle-box .btn')].pop().click(); await wait(20);
 console.log('timer puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 // 磁带：频率调谐玩法（17.4 MHz = 174 档）

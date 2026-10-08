@@ -417,29 +417,34 @@
       body.appendChild(el('div', { class: 'puzzle-row' }, [row, btn]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'clock') {
-      const hT = el('span', { class: 'puzzle-digit' }, []), hO = el('span', { class: 'puzzle-digit' }, []);
-      const mT = el('span', { class: 'puzzle-digit' }, []), mO = el('span', { class: 'puzzle-digit' }, []);
-      const h = [hT, hO], mnt = [mT, mO];
       let hv = 0, mv = 0;
+      const face = el('div', { class: 'puzzle-clockface' });
+      const hourHand = el('div', { class: 'puzzle-hand hour' });
+      const minHand = el('div', { class: 'puzzle-hand min' });
+      const pin = el('div', { class: 'puzzle-hand-pin' });
+      face.appendChild(hourHand); face.appendChild(minHand); face.appendChild(pin);
       const up = () => {
-        const st = String(hv).padStart(2, '0'), sm = String(mv).padStart(2, '0');
-        if (hT.dataset.v !== st[0]) { hT.dataset.v = st[0]; rollDigit(hT, +st[0], 0); }
-        if (hO.dataset.v !== st[1]) { hO.dataset.v = st[1]; rollDigit(hO, +st[1], 60); }
-        if (mT.dataset.v !== sm[0]) { mT.dataset.v = sm[0]; rollDigit(mT, +sm[0], 120); }
-        if (mO.dataset.v !== sm[1]) { mO.dataset.v = sm[1]; rollDigit(mO, +sm[1], 180); }
+        hourHand.style.transform = 'rotate(' + ((hv % 12) * 30 + mv * 0.5) + 'deg)';
+        minHand.style.transform = 'rotate(' + (mv * 6) + 'deg)';
       };
-      const mkStep = (dv, getv, setv) => () => { setv(getv() + dv); up(); };
-      up();
+      const row = el('div', { class: 'puzzle-row puzzle-clock' }, [
+        el('div', { class: 'puzzle-dial' }, [
+          el('button', { class: 'btn dial-btn', onclick: () => { hv = ((hv + 1) % 24 + 24) % 24; up(); } }, ['▲']),
+          el('span', { class: 'dim dial-label' }, ['时']),
+          el('button', { class: 'btn dial-btn', onclick: () => { hv = ((hv - 1) % 24 + 24) % 24; up(); } }, ['▼']),
+        ]),
+        face,
+        el('div', { class: 'puzzle-dial' }, [
+          el('button', { class: 'btn dial-btn', onclick: () => { mv = ((mv + 1) % 60 + 60) % 60; up(); } }, ['▲']),
+          el('span', { class: 'dim dial-label' }, ['分']),
+          el('button', { class: 'btn dial-btn', onclick: () => { mv = ((mv - 1) % 60 + 60) % 60; up(); } }, ['▼']),
+        ]),
+      ]);
       const btn = el('button', { class: 'btn', onclick: () => {
         if (hv === pz.targetHour && mv === pz.targetMin) solve();
         else fail(pz.wrongHint || '定时器没响。时间不对。');
       } }, ['校准']);
-      body.appendChild(el('div', { class: 'puzzle-row puzzle-clock' }, [
-        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▲']), el('span', { class: 'puzzle-digit-pair' }, h), el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => hv, (v) => hv = ((v % 24) + 24) % 24) }, ['▼'])]),
-        el('span', { class: 'puzzle-colon' }, [':']),
-        el('div', { class: 'puzzle-dial' }, [el('button', { class: 'btn dial-btn', onclick: mkStep(1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▲']), el('span', { class: 'puzzle-digit-pair' }, mnt), el('button', { class: 'btn dial-btn', onclick: mkStep(-1, () => mv, (v) => mv = ((v % 60) + 60) % 60) }, ['▼'])]),
-        btn,
-      ]));
+      body.appendChild(el('div', { class: 'puzzle-row' }, [row, btn]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'quiz') {
       (pz.data.options || []).forEach((op) => {
