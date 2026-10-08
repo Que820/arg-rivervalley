@@ -154,6 +154,7 @@ link('记忆回廊').click(); await wait(20);
 const frags = () => [...window.document.querySelectorAll('.puzzle-frag')];
 const tags = ['把一个名字写在床板背面','三天没有开口说话','教他们在窗台用蓝绳打结','把『爸爸』说成了『编号』','它比我们诚实','关键样本——不可损失'];
 for (let k = 0; k < tags.length; k++) { frags().find(f=>f.textContent.includes(tags[k])).click(); await wait(5); } await wait(20);
+window.document.querySelector('.puzzle-check').click(); await wait(20);
 console.log('memory puzzle solved:', !!window.document.querySelector('.puzzle-box.solved'));
 link('洗涤间').click(); await wait(20);
 clickKw('「别信白大衣说的话。」'); await wait(20);

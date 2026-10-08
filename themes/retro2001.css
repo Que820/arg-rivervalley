@@ -558,3 +558,5 @@ body, .btn, input, textarea {
 .puzzle-frag { touch-action: none; -webkit-user-select: none; user-select: none; cursor: grab; }
 .puzzle-frag:active { cursor: grabbing; }
 .puzzle-frag.dragging { position: relative; z-index: 10; opacity: .88; box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+
+.puzzle-check[disabled] { opacity: .45; cursor: not-allowed; }

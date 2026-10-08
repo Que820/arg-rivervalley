@@ -342,16 +342,21 @@
         return c;
       };
 
+      const checkBtn = el('button', { class: 'btn puzzle-check' }, ['校验']);
+      checkBtn.addEventListener('click', () => {
+        if (picked.filter((v) => v !== undefined).length < nSlots) return;
+        if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
+        else { picked.fill(undefined); fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); }
+      });
+      body.appendChild(checkBtn);
+
       const place = (src, slot) => {
         picked[slot] = src;
-        if (picked.filter((v) => v !== undefined).length === nSlots) {
-          if (picked.join(',') === pz.data.items.map((_, i) => i).join(',')) solve();
-          else { picked.fill(undefined); fail(pz.wrongHint || '顺序不对。残像散开了，重来。'); redraw(); return; }
-        }
         redraw();
       };
 
       const redraw = () => {
+        checkBtn.disabled = picked.filter((v) => v !== undefined).length < nSlots;
         slotsEl.innerHTML = '';
         for (let k = 0; k < nSlots; k++) {
           const sl = el('div', { class: 'puzzle-slot', 'data-slot': String(k) }, [String(k + 1) + '.']);
