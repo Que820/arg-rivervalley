@@ -243,7 +243,6 @@
   function renderBrowse(node) {
     PUZ_HIDE = (node.puzzle && !S.save.solved[node.puzzle.id]) ? (node.puzzle.hideKws || []) : [];
     const out = parasWithReports(node.body);
-    if (node.puzzle) out.push(renderPuzzle(node));
     let locked = 0;
     (node.sections || []).forEach((sec) => {
       if (sec.requires && !evalRequires(sec.requires).ok) { locked++; return; }
@@ -252,6 +251,7 @@
     if (locked) {
       out.push(el('div', { class: 'card-locked' }, ['〔档案更新 × ' + locked + ' ：随调查进度解锁〕']));
     }
+    if (node.puzzle) out.push(renderPuzzle(node)); // 解密置于全部内容之后、出口链接之前
     out.push(nodeLinks(node));
     return out;
   }
