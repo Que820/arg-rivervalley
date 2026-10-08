@@ -423,9 +423,12 @@
       const minHand = el('div', { class: 'puzzle-hand min' });
       const pin = el('div', { class: 'puzzle-hand-pin' });
       face.appendChild(hourHand); face.appendChild(minHand); face.appendChild(pin);
+      const readout = el('div', { class: 'dim puzzle-clock-readout' }, ['00:00']);
       const up = () => {
         hourHand.style.transform = 'rotate(' + ((hv % 12) * 30 + mv * 0.5) + 'deg)';
         minHand.style.transform = 'rotate(' + (mv * 6) + 'deg)';
+        readout.textContent = String(hv).padStart(2, '0') + ':' + String(mv).padStart(2, '0');
+        err.textContent = ''; // 调整即刻清除上一次的报错
       };
       const row = el('div', { class: 'puzzle-row puzzle-clock' }, [
         el('div', { class: 'puzzle-dial' }, [
@@ -440,11 +443,12 @@
           el('button', { class: 'btn dial-btn', onclick: () => { mv = ((mv - 1) % 60 + 60) % 60; up(); } }, ['▼']),
         ]),
       ]);
+      const wrapCol = el('div', { class: 'puzzle-clock-col' }, [row, readout]);
       const btn = el('button', { class: 'btn', onclick: () => {
         if (hv === pz.targetHour && mv === pz.targetMin) solve();
         else fail(pz.wrongHint || '定时器没响。时间不对。');
       } }, ['校准']);
-      body.appendChild(el('div', { class: 'puzzle-row' }, [row, btn]));
+      body.appendChild(el('div', { class: 'puzzle-row' }, [wrapCol, btn]));
       if (pz.hint) body.appendChild(el('div', { class: 'dim puzzle-hint' }, ['提示：' + pz.hint]));
     } else if (pz.kind === 'quiz') {
       (pz.data.options || []).forEach((op) => {

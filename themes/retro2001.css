@@ -579,3 +579,6 @@ body, .btn, input, textarea {
 .puzzle-hand.min { width: 3px; height: 48px; left: calc(50% - 1.5px); background: #555; }
 .puzzle-hand-pin { position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: #222; }
 .dial-label { margin: 2px 0; }
+
+.puzzle-clock-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.puzzle-clock-readout { font-size: 14px; letter-spacing: 2px; }
